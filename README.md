@@ -16,8 +16,11 @@ each worktree is a full working copy of a branch.
 ## Usage
 
 ```bash
-uvx copier copy gh:alltuner/projectuner ~/dev/my-project
+uvx copier copy --trust gh:alltuner/projectuner ~/dev/my-project
 ```
+
+The `--trust` flag is required because this template runs post-copy tasks (bare clone setup
+via mise). Without it, copier will refuse to execute them.
 
 You'll be prompted for:
 
