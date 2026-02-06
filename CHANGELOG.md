@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.1.5](https://github.com/alltuner/projectuner/compare/v0.1.4...v0.1.5) (2026-02-06)
+
+
+### Features
+
+* add template-update task for copier updates in bare repo projects ([#15](https://github.com/alltuner/projectuner/issues/15)) ([9e572c8](https://github.com/alltuner/projectuner/commit/9e572c8dde9ef7154e179e0546bddc9718c007db))
+
+
+### Documentation Updates
+
+* add known issue for Starship ignore_bare_repo with gitdir pointer ([#13](https://github.com/alltuner/projectuner/issues/13)) ([a0b88cd](https://github.com/alltuner/projectuner/commit/a0b88cdf6cfab6329ddd049cb9d663baad890b46))
+
 ## [0.1.4](https://github.com/alltuner/projectuner/compare/v0.1.3...v0.1.4) (2026-02-06)
 
 
