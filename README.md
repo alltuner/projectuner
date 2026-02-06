@@ -49,7 +49,7 @@ my-project/
 │       ├── repo-public  # Create a public GitHub repo
 │       ├── repo-private # Create a private GitHub repo
 │       └── remote-add   # Add a remote to an existing repo
-├── mise.toml        # Mise configuration
+├── .mise.toml       # Mise configuration
 ├── _/               # Scratchpad for scripts and notes
 ├── .claude/         # Agent configuration
 ├── AGENTS.md        # Instructions for AI coding agents

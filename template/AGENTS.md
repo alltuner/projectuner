@@ -19,7 +19,7 @@ This project uses a **bare repo + worktree** structure. Read this before making 
 │       ├── repo-public  # Create a public GitHub repo
 │       ├── repo-private # Create a private GitHub repo
 │       └── remote-add  # Add a remote to an existing repo
-├── mise.toml        # Mise configuration
+├── .mise.toml       # Mise configuration
 ├── _/               # Scratchpad for notes and one-off scripts
 ├── .claude/         # Agent configuration (outside version control)
 └── AGENTS.md        # This file
