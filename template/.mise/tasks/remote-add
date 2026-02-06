@@ -1,0 +1,16 @@
+#!/bin/bash
+# mise description="Add a git remote and push the main branch"
+
+set -euo pipefail
+
+URL="${1:?Usage: mise run remote-add <remote-url>}"
+NAME="${2:-origin}"
+
+git remote add "$NAME" "$URL"
+git config "remote.$NAME.fetch" "+refs/heads/*:refs/remotes/$NAME/*"
+git fetch "$NAME"
+git push -u "$NAME" main
+
+echo ""
+echo "Remote '$NAME' added and main branch pushed."
+echo "  $URL"
