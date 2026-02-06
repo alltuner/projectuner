@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.4](https://github.com/alltuner/projectuner/compare/v0.1.3...v0.1.4) (2026-02-06)
+
+
+### Features
+
+* add wt-update, wt-destroy tasks and fetch-before-add ([#11](https://github.com/alltuner/projectuner/issues/11)) ([0be8088](https://github.com/alltuner/projectuner/commit/0be808818374b16fb606c31add6e92afe899fbb6))
+
 ## [0.1.3](https://github.com/alltuner/projectuner/compare/v0.1.2...v0.1.3) (2026-02-06)
 
 
