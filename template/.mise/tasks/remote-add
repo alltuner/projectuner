@@ -1,10 +1,11 @@
 #!/bin/bash
-# mise description="Add a git remote and push the main branch"
+# mise description="Add an existing GitHub repo as a remote and push main"
 
 set -euo pipefail
 
-URL="${1:?Usage: mise run remote-add <remote-url>}"
+REPO="${1:?Usage: mise run remote-add <owner/repo>}"
 NAME="${2:-origin}"
+URL="git@github.com:${REPO}.git"
 
 git remote add "$NAME" "$URL"
 git config "remote.$NAME.fetch" "+refs/heads/*:refs/remotes/$NAME/*"

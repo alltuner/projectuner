@@ -69,7 +69,7 @@ mise run repo-public owner/repo-name
 mise run repo-private owner/repo-name
 
 # Or add an existing remote
-mise run remote-add git@github.com:owner/repo.git
+mise run remote-add owner/repo
 ```
 
 ## When running commands

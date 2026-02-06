@@ -88,7 +88,7 @@ mise run repo-private myorg/my-project
 mise run repo-public myorg/my-project
 
 # Or add an existing remote
-mise run remote-add git@github.com:myorg/my-project.git
+mise run remote-add myorg/my-project
 ```
 
 `repo-public` and `repo-private` use `gh repo create` under the hood, so they'll fail if
@@ -122,7 +122,7 @@ outside version control.
 | `wt-ls` | `mise run wt-ls` | List all active worktrees. |
 | `repo-public` | `mise run repo-public <owner/repo>` | Create a public GitHub repo, set up remote, and push `main`. |
 | `repo-private` | `mise run repo-private <owner/repo>` | Create a private GitHub repo, set up remote, and push `main`. |
-| `remote-add` | `mise run remote-add <url> [name]` | Add a git remote, configure fetch refs, and push `main`. Defaults remote name to `origin`. |
+| `remote-add` | `mise run remote-add <owner/repo> [name]` | Add an existing GitHub repo as remote and push `main`. Defaults remote name to `origin`. |
 
 ## Local excludes
 
