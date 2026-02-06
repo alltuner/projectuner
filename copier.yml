@@ -6,9 +6,16 @@ _templates_suffix: .jinja
 _preserve_symlinks: true
 
 _tasks:
-  - command: "mise trust"
+  - command: "bash .mise/tasks/setup"
     when: "{{ _copier_operation == 'copy' }}"
-  - command: "mise run setup"
+  - command: >-
+      if command -v mise &>/dev/null; then
+        mise trust;
+      else
+        echo "";
+        echo "WARNING: mise is not installed.";
+        echo "  Install it from https://mise.jdx.dev/ to use worktree tasks (wt-add, wt-rm, wt-ls, etc).";
+      fi
     when: "{{ _copier_operation == 'copy' }}"
 
 _message_before_copy: |
