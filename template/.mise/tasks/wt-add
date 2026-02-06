@@ -1,11 +1,22 @@
 #!/bin/bash
-#MISE description="Create a new git worktree with a fresh branch"
+#MISE description="Create a new git worktree for a branch"
 
 set -euo pipefail
 
 BRANCH="${1:?Usage: mise run wt-add <branch-name> [base-branch]}"
 BASE="${2:-main}"
 
-git worktree add -b "$BRANCH" "$BRANCH" "$BASE"
-echo "Created worktree '$BRANCH' from '$BASE'"
+if git show-ref --verify --quiet "refs/heads/$BRANCH"; then
+  # Local branch exists, check it out
+  git worktree add "$BRANCH" "$BRANCH"
+  echo "Checked out existing branch '$BRANCH'"
+elif git show-ref --verify --quiet "refs/remotes/origin/$BRANCH"; then
+  # Remote branch exists, track it
+  git worktree add "$BRANCH" "$BRANCH"
+  echo "Checked out '$BRANCH' (tracking origin/$BRANCH)"
+else
+  # New branch, create from base
+  git worktree add -b "$BRANCH" "$BRANCH" "$BASE"
+  echo "Created new branch '$BRANCH' from '$BASE'"
+fi
 echo "  cd $BRANCH/"

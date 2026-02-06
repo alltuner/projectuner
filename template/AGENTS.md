@@ -30,8 +30,9 @@ This project uses a **bare repo + worktree** structure. Read this before making 
    basing new branches, not for edits.
 2. **Each worktree is a full checkout** of a branch. You `cd` into a worktree directory to work on
    that branch. There is no `git checkout` or `git switch` needed.
-3. **Git commands work from the project root**. The `.git` pointer file connects to `.bare/`.
-   The root is on a `_workspace` branch (empty tree) so `git status` returns clean.
+3. **The project root is a container, not a working directory**. The `.git` pointer file connects
+   to `.bare/`. Running `git status` at the root will say "must be run in a work tree", which
+   is correct. Always `cd` into a worktree to do git operations on that branch.
 4. **Files at the project root** (outside worktrees) are not tracked by git. The `.mise/` tasks,
    `AGENTS.md`, and config directories live here intentionally.
 
@@ -67,18 +68,17 @@ If the project was created without a remote URL, use one of these to connect it:
 mise run repo-public owner/repo-name
 mise run repo-private owner/repo-name
 
-# Or add an existing remote
+# Or add an existing remote and fetch branches
 mise run remote-add owner/repo
 ```
 
 ## When running commands
 
-- Always `cd` into the appropriate worktree directory before running build, test, or lint commands.
-- To compare branches, use `git diff main...<branch>` from the project root.
-- To fetch updates: `git fetch --all` from anywhere in the project.
+- Always `cd` into the appropriate worktree directory before running build, test, lint, or git commands.
+- To compare branches from a worktree: `git diff main...<branch>`.
+- To fetch updates: `git fetch --all` from any worktree.
 
 ## Local excludes
 
-The project root has a `.gitignore` containing `*` so all root-level files stay untracked.
-This only affects the `_workspace` checkout; linked worktrees have their own `.gitignore`.
-Use `.bare/info/exclude` only for patterns that should apply across all worktrees.
+Each worktree has its own `.gitignore`. Use `.bare/info/exclude` for patterns that should
+apply across all worktrees.
