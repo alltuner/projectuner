@@ -5,7 +5,7 @@
 set -euo pipefail
 
 BRANCH="${1:?Usage: mise run wt-add <branch-name> [base-branch]}"
-BASE="${2:-{{ default_branch }}}"
+BASE="${2:-main}"
 
 git worktree add -b "$BRANCH" "$BRANCH" "$BASE"
 echo "Created worktree '$BRANCH' from '$BASE'"

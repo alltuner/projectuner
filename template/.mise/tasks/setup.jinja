@@ -4,27 +4,29 @@
 set -euo pipefail
 
 REMOTE_URL="{{ git_remote_url }}"
-DEFAULT_BRANCH="{{ default_branch }}"
 
 echo "Setting up worktree-based project..."
 
-# Clone as bare repository
-git clone --bare "$REMOTE_URL" .bare
+if [ -n "$REMOTE_URL" ]; then
+  # Clone existing remote as bare repository
+  git clone --bare "$REMOTE_URL" .bare
+  echo "gitdir: ./.bare" > .git
+  git config remote.origin.fetch "+refs/heads/*:refs/remotes/origin/*"
+  git config worktree.useRelativePaths true
+  git fetch --all
+  git worktree add main main
+else
+  # Start a fresh bare repo with no remote
+  git init --bare .bare
+  echo "gitdir: ./.bare" > .git
+  git config worktree.useRelativePaths true
 
-# Create .git pointer file so git commands work from the project root
-echo "gitdir: ./.bare" > .git
-
-# Configure fetch refs for all branches (bare clones only fetch the default)
-git config remote.origin.fetch "+refs/heads/*:refs/remotes/origin/*"
-
-# Use relative paths so the project directory is portable
-git config worktree.useRelativePaths true
-
-# Fetch all remote branches
-git fetch --all
-
-# Add the default branch as the first worktree
-git worktree add "$DEFAULT_BRANCH" "$DEFAULT_BRANCH"
+  # Create an initial empty commit so worktrees can be added
+  TREE=$(git hash-object -t tree /dev/null)
+  COMMIT=$(echo "Initial commit" | git commit-tree "$TREE")
+  git update-ref refs/heads/main "$COMMIT"
+  git worktree add main main
+fi
 
 # Set up local excludes (these stay outside version control)
 cat >> .bare/info/exclude << 'EXCLUDE'
@@ -54,7 +56,12 @@ ln -sf AGENTS.md CLAUDE.md
 echo ""
 echo "Project initialized!"
 echo "  Bare repo: .bare/"
-echo "  Worktree:  $DEFAULT_BRANCH/"
+echo "  Worktree:  main/"
+if [ -n "$REMOTE_URL" ]; then
+  echo "  Remote:    $REMOTE_URL"
+else
+  echo "  Remote:    (none, add one later with: git remote add origin <url>)"
+fi
 echo ""
 echo "Tasks (via mise):"
 echo "  mise run wt-add <branch> [base]  - Create a new worktree"
@@ -62,4 +69,4 @@ echo "  mise run wt-rm <branch>          - Remove a worktree"
 echo "  mise run wt-ls                   - List all worktrees"
 echo ""
 echo "Next steps:"
-echo "  cd $DEFAULT_BRANCH/"
+echo "  cd main/"

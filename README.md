@@ -26,12 +26,11 @@ You'll be prompted for:
 
 | Question | Default | Description |
 |----------|---------|-------------|
-| `project_name` | directory name | Name of the project |
-| `git_remote_url` | (required) | Remote URL to bare-clone |
-| `default_branch` | `main` | Primary branch name |
+| `git_remote_url` | (empty) | Remote URL to bare-clone. Leave empty to start a fresh repo. |
 
-After answering, copier trusts the mise config and runs `mise run setup`, which clones the
-bare repo, creates worktrees, and configures everything.
+If you provide a remote URL, the template clones it as a bare repo. If you leave it empty,
+it initializes a fresh bare repo with an empty initial commit. You can add a remote later
+with `git remote add origin <url>`.
 
 ## What you get
 
@@ -39,7 +38,7 @@ bare repo, creates worktrees, and configures everything.
 my-project/
 ├── .bare/           # Bare git clone
 ├── .git             # Pointer file to .bare
-├── main/            # Worktree for the default branch
+├── main/            # Worktree for the main branch
 ├── .mise/
 │   └── tasks/       # Worktree management tasks
 │       ├── setup    # One-time project initialization
@@ -98,7 +97,7 @@ outside version control.
 | Task | Usage | Description |
 |------|-------|-------------|
 | `setup` | `mise run setup` | One-time initialization (runs automatically during scaffolding). |
-| `wt-add` | `mise run wt-add <branch> [base]` | Create a new worktree. Defaults to branching from the default branch. |
+| `wt-add` | `mise run wt-add <branch> [base]` | Create a new worktree. Defaults to branching from `main`. |
 | `wt-rm` | `mise run wt-rm <branch>` | Remove a worktree and its directory. |
 | `wt-ls` | `mise run wt-ls` | List all active worktrees. |
 

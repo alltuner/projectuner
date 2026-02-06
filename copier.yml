@@ -13,24 +13,14 @@ _tasks:
     when: "{{ _copier_operation == 'copy' }}"
 
 _message_before_copy: |
-  This template scaffolds a git worktree-based project using the bare repo pattern.
-  You will need a git remote URL to clone from.
+  Scaffolds a git worktree-based project using the bare repo pattern.
 
 _message_after_copy: |
   Project scaffolded successfully!
   cd into your project and start working:
-    cd {{ default_branch }}/
-
-project_name:
-  type: str
-  help: Project name
-  default: "{{ _folder_name }}"
+    cd main/
 
 git_remote_url:
   type: str
-  help: Git remote URL to clone (e.g. git@github.com:user/repo.git)
-
-default_branch:
-  type: str
-  help: Default branch name
-  default: main
+  help: Git remote URL to clone (leave empty to start a fresh repo)
+  default: ""

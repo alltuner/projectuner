@@ -5,10 +5,10 @@ This project uses a **bare repo + worktree** structure. Read this before making 
 ## Project layout
 
 ```
-{{ project_name }}/
+{{ _folder_name }}/
 ├── .bare/           # Bare git clone (all git object data lives here)
 ├── .git             # Pointer file (contains "gitdir: ./.bare")
-├── {{ default_branch }}/           # Worktree for the {{ default_branch }} branch (keep pristine)
+├── main/            # Worktree for the main branch (keep pristine)
 ├── <feature>/       # Worktree for a feature branch
 ├── .mise/
 │   └── tasks/       # Worktree management tasks (run via mise)
@@ -24,7 +24,7 @@ This project uses a **bare repo + worktree** structure. Read this before making 
 
 ## Key rules
 
-1. **Never work directly in `{{ default_branch }}/`**. It is a clean reference. Use it for diffing and
+1. **Never work directly in `main/`**. It is a clean reference. Use it for diffing and
    basing new branches, not for edits.
 2. **Each worktree is a full checkout** of a branch. You `cd` into a worktree directory to work on
    that branch. There is no `git checkout` or `git switch` needed.
@@ -40,7 +40,7 @@ All worktree operations use mise tasks from the project root.
 Create a new worktree for a feature branch:
 
 ```bash
-mise run wt-add my-feature          # branches from {{ default_branch }}
+mise run wt-add my-feature          # branches from main
 mise run wt-add my-feature develop  # branches from develop
 ```
 
@@ -59,7 +59,7 @@ mise run wt-rm my-feature
 ## When running commands
 
 - Always `cd` into the appropriate worktree directory before running build, test, or lint commands.
-- If you need to compare branches, use `git diff {{ default_branch }}...<branch>` from the project root.
+- If you need to compare branches, use `git diff main...<branch>` from the project root.
 - To fetch updates: `git fetch --all` from anywhere in the project.
 
 ## Local excludes
