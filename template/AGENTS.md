@@ -12,12 +12,14 @@ This project uses a **bare repo + worktree** structure. Read this before making 
 ├── <feature>/       # Worktree for a feature branch
 ├── .mise/
 │   └── tasks/       # Project tasks (run via mise)
-│       ├── wt-add      # Create a new worktree
-│       ├── wt-rm       # Remove a worktree
-│       ├── wt-ls       # List worktrees
+│       ├── wt-add       # Create a new worktree
+│       ├── wt-rm        # Remove a worktree
+│       ├── wt-destroy   # Remove worktree + local + remote branch
+│       ├── wt-ls        # List worktrees
+│       ├── wt-update    # Fetch remotes and fast-forward main
 │       ├── repo-public  # Create a public GitHub repo
 │       ├── repo-private # Create a private GitHub repo
-│       └── remote-add  # Add a remote to an existing repo
+│       └── remote-add   # Add a remote to an existing repo
 ├── .mise.toml       # Mise configuration
 ├── _/               # Scratchpad for notes and one-off scripts
 ├── .claude/         # Agent configuration (outside version control)
@@ -53,10 +55,19 @@ List active worktrees:
 mise run wt-ls
 ```
 
+Fetch latest from all remotes and fast-forward main:
+
+```bash
+mise run wt-update
+```
+
 Remove a worktree when done:
 
 ```bash
 mise run wt-rm my-feature
+
+# Or remove worktree + local + remote branch in one shot
+mise run wt-destroy my-feature
 ```
 
 ## Setting up a remote
