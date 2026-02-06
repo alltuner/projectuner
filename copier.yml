@@ -23,8 +23,8 @@ _message_before_copy: |
 
 _message_after_copy: |
   Project scaffolded successfully!
-  cd into your project and start working:
-    cd {{ _copier_conf.dst_path }}/main/
+    cd {{ _copier_conf.dst_path }}
+    mise run wt-add <your-branch>
 
 git_remote_url:
   type: str
