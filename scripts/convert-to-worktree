@@ -192,7 +192,7 @@ convert_manually() {
   done
 
   # Install mise infrastructure
-  TASK_FILES=(wt-add wt-rm wt-ls repo-public repo-private remote-add)
+  TASK_FILES=(wt-add wt-rm wt-destroy wt-ls wt-update repo-public repo-private remote-add template-update)
   mkdir -p .mise/tasks
   for task in "${TASK_FILES[@]}"; do
     fetch_template_file ".mise/tasks/$task" ".mise/tasks/$task"
@@ -233,7 +233,7 @@ echo "Conversion complete!"
 echo "  Bare repo: .bare/"
 echo "  Worktree:  main/ ($MAIN_BRANCH)"
 if command -v uvx &>/dev/null; then
-  echo "  Update:    uvx copier update --trust"
+  echo "  Update:    mise run template-update"
 fi
 echo ""
 echo "Tasks (via mise):"
