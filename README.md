@@ -133,4 +133,4 @@ To add your own, edit `.bare/info/exclude` directly.
 ## Credit
 
 Based on the workflow from [Git Worktrees Done Right](https://gabri.me/blog/git-worktrees-done-right)
-by Gabriel Gonzalez.
+by Ahmed el Gabri.
