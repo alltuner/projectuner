@@ -8,14 +8,7 @@ _preserve_symlinks: true
 _tasks:
   - command: "bash .mise/tasks/setup"
     when: "{{ _copier_operation == 'copy' }}"
-  - command: >-
-      if command -v mise &>/dev/null; then
-        mise trust;
-      else
-        echo "";
-        echo "WARNING: mise is not installed.";
-        echo "  Install it from https://mise.jdx.dev/ to use worktree tasks (wt-add, wt-rm, wt-ls, etc).";
-      fi
+  - command: "bash .mise/tasks/trust-or-warn"
     when: "{{ _copier_operation == 'copy' }}"
 
 _message_before_copy: |

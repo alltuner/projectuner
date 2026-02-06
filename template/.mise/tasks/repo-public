@@ -2,7 +2,6 @@
 #MISE description="Create a public GitHub repo and push main"
 
 set -euo pipefail
-export GIT_DIR=.bare
 
 REPO="${1:?Usage: mise run repo-public <owner/repo>}"
 

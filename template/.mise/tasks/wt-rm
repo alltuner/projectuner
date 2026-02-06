@@ -2,7 +2,6 @@
 #MISE description="Remove a git worktree and its directory"
 
 set -euo pipefail
-export GIT_DIR=.bare
 
 BRANCH="${1:?Usage: mise run wt-rm <branch-name>}"
 

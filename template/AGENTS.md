@@ -7,6 +7,7 @@ This project uses a **bare repo + worktree** structure. Read this before making 
 ```
 <project>/
 ├── .bare/           # Bare git clone (all git object data lives here)
+├── .git             # Pointer file (contains "gitdir: ./.bare")
 ├── main/            # Worktree for the main branch (keep pristine)
 ├── <feature>/       # Worktree for a feature branch
 ├── .mise/
@@ -30,9 +31,8 @@ This project uses a **bare repo + worktree** structure. Read this before making 
    basing new branches, not for edits.
 2. **Each worktree is a full checkout** of a branch. You `cd` into a worktree directory to work on
    that branch. There is no `git checkout` or `git switch` needed.
-3. **The project root is not a git working tree**. There is no `.git` pointer file. All git
-   operations at the root go through mise tasks (which set `GIT_DIR=.bare` internally).
-   Run git commands directly only from inside a worktree directory.
+3. **Git commands work from the project root**. The `.git` pointer file connects to `.bare/`.
+   The root is on a `_workspace` branch (empty tree) so `git status` returns clean.
 4. **Files at the project root** (outside worktrees) are not tracked by git. The `.mise/` tasks,
    `AGENTS.md`, and config directories live here intentionally.
 
@@ -75,8 +75,8 @@ mise run remote-add owner/repo
 ## When running commands
 
 - Always `cd` into the appropriate worktree directory before running build, test, or lint commands.
-- To compare branches: `cd main && git diff main...<branch>`.
-- To fetch updates: `cd main && git fetch --all`.
+- To compare branches, use `git diff main...<branch>` from the project root.
+- To fetch updates: `git fetch --all` from anywhere in the project.
 
 ## Local excludes
 

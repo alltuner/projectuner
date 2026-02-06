@@ -10,7 +10,7 @@ echo "Setting up worktree-based project..."
 if [ -n "$REMOTE_URL" ]; then
   # Clone existing remote as bare repository
   git clone --bare "$REMOTE_URL" .bare
-  export GIT_DIR=.bare
+  echo "gitdir: ./.bare" > .git
   git config remote.origin.fetch "+refs/heads/*:refs/remotes/origin/*"
   git config worktree.useRelativePaths true
   git fetch --all
@@ -18,7 +18,7 @@ if [ -n "$REMOTE_URL" ]; then
 else
   # Start a fresh bare repo with no remote
   git init --bare .bare
-  export GIT_DIR=.bare
+  echo "gitdir: ./.bare" > .git
   git config worktree.useRelativePaths true
 
   # Create an initial empty commit so worktrees can be added
@@ -27,6 +27,33 @@ else
   git update-ref refs/heads/main "$COMMIT"
   git worktree add main main
 fi
+
+# Make git status work at the project root so shell prompts (starship, etc.)
+# don't show spurious indicators. An empty orphan branch means "nothing tracked
+# here" and .bare/info/exclude hides all the untracked project-root files.
+git config core.bare false
+EMPTY_TREE=$(git hash-object -t tree /dev/null)
+EMPTY_COMMIT=$(echo "workspace root" | git commit-tree "$EMPTY_TREE")
+git update-ref refs/heads/_workspace "$EMPTY_COMMIT"
+git symbolic-ref HEAD refs/heads/_workspace
+
+# Set up local excludes (these stay outside version control)
+cat >> .bare/info/exclude << 'EXCLUDE'
+
+# Project-level files (outside version control)
+.mise/
+.mise.toml
+_/
+.claude/
+.cursor/
+AGENTS.md
+CLAUDE.md
+*.env
+.env.*
+flake.nix
+flake.lock
+.copier-answers.yml
+EXCLUDE
 
 # Create directories for scratchpad and agent config
 mkdir -p _ .claude
