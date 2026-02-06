@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.1.3](https://github.com/alltuner/projectuner/compare/v0.1.2...v0.1.3) (2026-02-06)
+
+
+### Features
+
+* add conversion script for existing git clones and update docs ([#7](https://github.com/alltuner/projectuner/issues/7)) ([fe4f6c7](https://github.com/alltuner/projectuner/commit/fe4f6c7fb56bdca9d8dbdb3a709f59bbef12a25f))
+
+
+### Documentation Updates
+
+* add root AGENTS.md with conventional commit conventions ([#10](https://github.com/alltuner/projectuner/issues/10)) ([a9acf36](https://github.com/alltuner/projectuner/commit/a9acf364b6fa453904cda7dcfdf9922a8b9fef07))
+
 ## [0.1.2](https://github.com/alltuner/projectuner/compare/v0.1.1...v0.1.2) (2026-02-06)
 
 
