@@ -5,7 +5,7 @@ This project uses a **bare repo + worktree** structure. Read this before making 
 ## Project layout
 
 ```
-{{ _folder_name }}/
+<project>/
 ├── .bare/           # Bare git clone (all git object data lives here)
 ├── .git             # Pointer file (contains "gitdir: ./.bare")
 ├── main/            # Worktree for the main branch (keep pristine)
