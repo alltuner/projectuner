@@ -28,30 +28,17 @@ fi
 
 # Make git status work at the project root so shell prompts (starship, etc.)
 # don't show spurious indicators. An empty orphan branch means "nothing tracked
-# here" and .bare/info/exclude hides all the untracked project-root files.
+# here" and a wildcard .gitignore hides all untracked project-root files.
 git config core.bare false
 EMPTY_TREE=$(git hash-object -t tree /dev/null)
 EMPTY_COMMIT=$(echo "workspace root" | git commit-tree "$EMPTY_TREE")
 git update-ref refs/heads/_workspace "$EMPTY_COMMIT"
 git symbolic-ref HEAD refs/heads/_workspace
 
-# Set up local excludes (these stay outside version control)
-cat >> .bare/info/exclude << 'EXCLUDE'
-
-# Project-level files (outside version control)
-.mise/
-.mise.toml
-_/
-.claude/
-.cursor/
-AGENTS.md
-CLAUDE.md
-*.env
-.env.*
-flake.nix
-flake.lock
-.copier-answers.yml
-EXCLUDE
+# The project root is on the _workspace branch (empty tree). A wildcard .gitignore
+# here keeps git status clean without polluting .bare/info/exclude, which is
+# shared across all linked worktrees.
+echo "*" > .gitignore
 
 # Create directories for scratchpad and agent config
 mkdir -p _ .claude

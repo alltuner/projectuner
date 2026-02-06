@@ -79,5 +79,6 @@ mise run remote-add owner/repo
 
 ## Local excludes
 
-Project-root files are excluded via `.bare/info/exclude`, not `.gitignore`. If you add new
-untracked files at the root, add their patterns there.
+The project root has a `.gitignore` containing `*` so all root-level files stay untracked.
+This only affects the `_workspace` checkout; linked worktrees have their own `.gitignore`.
+Use `.bare/info/exclude` only for patterns that should apply across all worktrees.
