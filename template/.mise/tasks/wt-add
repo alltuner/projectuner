@@ -6,6 +6,11 @@ set -euo pipefail
 BRANCH="${1:?Usage: mise run wt-add <branch-name> [base-branch]}"
 BASE="${2:-main}"
 
+# Fetch latest from all remotes (skip if no remotes configured)
+if git remote | grep -q .; then
+  git fetch --all --quiet
+fi
+
 if git show-ref --verify --quiet "refs/heads/$BRANCH"; then
   # Local branch exists, check it out
   git worktree add "$BRANCH" "$BRANCH"

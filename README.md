@@ -2,7 +2,8 @@
 
 A [copier](https://copier.readthedocs.io/) template that scaffolds git projects using the
 **bare repo + worktree** pattern described in
-[Git Worktrees Done Right](https://gabri.me/blog/git-worktrees-done-right).
+[Git Worktrees Done Right](https://gabri.me/blog/git-worktrees-done-right) and its followup
+[git-wt: Worktrees Simplified](https://gabri.me/blog/git-wt) by Ahmed el Gabri.
 
 Instead of switching branches with `git checkout`, you keep multiple branches checked out
 simultaneously as separate directories (worktrees). A bare clone holds all git data, and
@@ -44,7 +45,9 @@ my-project/
 │   └── tasks/       # Project tasks
 │       ├── wt-add       # Create a new worktree
 │       ├── wt-rm        # Remove a worktree
+│       ├── wt-destroy   # Remove worktree + local + remote branch
 │       ├── wt-ls        # List all worktrees
+│       ├── wt-update    # Fetch remotes and fast-forward main
 │       ├── repo-public  # Create a public GitHub repo
 │       ├── repo-private # Create a private GitHub repo
 │       └── remote-add   # Add a remote to an existing repo
@@ -70,8 +73,14 @@ cd my-feature/
 # List all worktrees
 mise run wt-ls
 
-# Clean up when done
+# Fetch latest and fast-forward main
+mise run wt-update
+
+# Clean up when done (keeps remote branch)
 mise run wt-rm my-feature
+
+# Or nuke everything: worktree + local + remote branch
+mise run wt-destroy my-feature
 ```
 
 The `main/` worktree stays pristine as a clean reference for diffing. Never edit files in it
@@ -164,9 +173,11 @@ outside version control.
 
 | Task | Usage | Description |
 |------|-------|-------------|
-| `wt-add` | `mise run wt-add <branch> [base]` | Create a new worktree. Defaults to branching from `main`. |
-| `wt-rm` | `mise run wt-rm <branch>` | Remove a worktree and its directory. |
+| `wt-add` | `mise run wt-add <branch> [base]` | Create a new worktree. Fetches remotes first, defaults to branching from `main`. |
+| `wt-rm` | `mise run wt-rm <branch>` | Remove a worktree and its local branch. |
+| `wt-destroy` | `mise run wt-destroy <branch>` | Remove a worktree and delete both local and remote branches. |
 | `wt-ls` | `mise run wt-ls` | List all active worktrees. |
+| `wt-update` | `mise run wt-update` | Fetch all remotes and fast-forward `main`. |
 | `repo-public` | `mise run repo-public <owner/repo>` | Create a public GitHub repo, set up remote, and push `main`. |
 | `repo-private` | `mise run repo-private <owner/repo>` | Create a private GitHub repo, set up remote, and push `main`. |
 | `remote-add` | `mise run remote-add <owner/repo> [name]` | Add an existing GitHub repo as remote and push `main`. Defaults remote name to `origin`. |
@@ -179,5 +190,11 @@ To add your own, edit `.bare/info/exclude` directly.
 
 ## Credit
 
-Based on the workflow from [Git Worktrees Done Right](https://gabri.me/blog/git-worktrees-done-right)
-by Ahmed el Gabri.
+Based on the workflow from Ahmed el Gabri:
+
+- [Git Worktrees Done Right](https://gabri.me/blog/git-worktrees-done-right) -- the bare repo
+  + worktree pattern that this template scaffolds.
+- [git-wt: Worktrees Simplified](https://gabri.me/blog/git-wt) -- a standalone CLI tool that
+  wraps the same pattern. Several of our mise tasks (`wt-update`, `wt-destroy`, fetch-before-add)
+  are inspired by `git-wt`'s approach. If you prefer a single CLI over mise tasks, check out
+  [git-wt](https://github.com/ahmedelgabri/git-wt).
