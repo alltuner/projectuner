@@ -1,0 +1,246 @@
+#!/bin/bash
+# ABOUTME: Converts a regular git clone into a bare repo + worktree structure.
+# ABOUTME: Uses copier when available, falls back to direct download from GitHub.
+
+set -euo pipefail
+
+GITHUB_RAW="https://raw.githubusercontent.com/alltuner/projectuner/main/template"
+GITHUB_TEMPLATE="gh:alltuner/projectuner"
+
+# Detect if running from within the projectuner repo (for offline manual fallback)
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]:-$0}")" 2>/dev/null && pwd || echo "")"
+TEMPLATE_DIR="${SCRIPT_DIR:+$SCRIPT_DIR/../template}"
+if [ -n "$TEMPLATE_DIR" ] && [ ! -d "$TEMPLATE_DIR/.mise" ]; then
+  TEMPLATE_DIR=""
+fi
+
+usage() {
+  cat <<'EOF'
+Usage: convert-to-worktree <directory>
+
+Converts a regular git clone into a bare repo + worktree structure.
+
+The target directory must be a regular git clone with a clean working tree.
+After conversion, the directory will have:
+
+  .bare/           Bare git repository (was .git/)
+  .git             Pointer file to .bare/
+  main/            Worktree for the main branch
+  .mise/tasks/     Worktree management tasks
+  _/               Scratchpad directory
+  .claude/         Agent configuration directory
+  AGENTS.md        Agent instructions
+  CLAUDE.md        Symlink to AGENTS.md
+EOF
+  exit 1
+}
+
+TARGET="${1:-}"
+if [ -z "$TARGET" ]; then
+  usage
+fi
+
+# Resolve to absolute path
+TARGET="$(cd "$TARGET" && pwd)"
+
+# --- Validation ---
+
+if [ ! -d "$TARGET/.git" ]; then
+  if [ -f "$TARGET/.git" ]; then
+    echo "Error: $TARGET/.git is already a pointer file (already converted?)" >&2
+    exit 1
+  fi
+  echo "Error: $TARGET is not a git repository (no .git directory)" >&2
+  exit 1
+fi
+
+cd "$TARGET"
+
+if ! git diff --quiet; then
+  echo "Error: working tree has unstaged changes. Commit or stash first." >&2
+  exit 1
+fi
+
+if ! git diff --cached --quiet; then
+  echo "Error: index has staged changes. Commit or stash first." >&2
+  exit 1
+fi
+
+UNTRACKED=$(git ls-files --others --exclude-standard)
+if [ -n "$UNTRACKED" ]; then
+  echo "Error: untracked files found. Commit, remove, or .gitignore them first:" >&2
+  echo "$UNTRACKED" | sed 's/^/  /' >&2
+  exit 1
+fi
+
+# --- Shared state ---
+
+ORIGINAL_REMOTE=$(git remote get-url origin 2>/dev/null || echo "")
+
+# Detect main branch
+if git show-ref --verify --quiet refs/heads/main; then
+  MAIN_BRANCH="main"
+elif git show-ref --verify --quiet refs/heads/master; then
+  MAIN_BRANCH="master"
+else
+  MAIN_BRANCH=$(git symbolic-ref --short HEAD 2>/dev/null || true)
+  if [ -z "$MAIN_BRANCH" ]; then
+    echo "Error: cannot detect main branch (detached HEAD and no main/master branch)" >&2
+    exit 1
+  fi
+fi
+
+echo "Converting $TARGET to worktree structure..."
+echo "  Main branch: $MAIN_BRANCH"
+
+# ============================================================
+# Strategy 1: Use copier (preferred, gives .copier-answers.yml)
+# ============================================================
+
+convert_with_copier() {
+  # Use a sibling directory for the backup so mv is always a rename (no copy)
+  BACKUP="${TARGET}.projectuner-backup.$$"
+
+  # Restore original on failure
+  cleanup_backup() {
+    if [ -d "$BACKUP" ]; then
+      rm -rf "$TARGET" 2>/dev/null || true
+      mv "$BACKUP" "$TARGET"
+      echo "Error: conversion failed. Original repository restored." >&2
+    fi
+  }
+  trap cleanup_backup EXIT
+
+  mv "$TARGET" "$BACKUP"
+
+  if ! uvx copier copy --trust --defaults \
+    --data "git_remote_url=$BACKUP" \
+    "$GITHUB_TEMPLATE" "$TARGET" 2>&1; then
+    exit 1
+  fi
+
+  # Fix remote: copier cloned from the backup path, restore the original remote
+  cd "$TARGET"
+  if [ -n "$ORIGINAL_REMOTE" ]; then
+    git -C main remote set-url origin "$ORIGINAL_REMOTE"
+  else
+    git -C main remote remove origin 2>/dev/null || true
+  fi
+
+  # Fix .copier-answers.yml so it records the real remote, not the backup path
+  tmpfile=$(mktemp)
+  sed "s|^git_remote_url:.*|git_remote_url: '${ORIGINAL_REMOTE}'|" \
+    "$TARGET/.copier-answers.yml" > "$tmpfile"
+  mv "$tmpfile" "$TARGET/.copier-answers.yml"
+
+  # Success, disarm the cleanup trap
+  trap - EXIT
+  rm -rf "$BACKUP"
+}
+
+# ============================================================
+# Strategy 2: Manual conversion (fallback when copier is absent)
+# ============================================================
+
+# Fetch a file from the template, preferring local copy over GitHub download
+fetch_template_file() {
+  local rel_path="$1"
+  local dest="$2"
+
+  if [ -n "$TEMPLATE_DIR" ] && [ -f "$TEMPLATE_DIR/$rel_path" ]; then
+    cp "$TEMPLATE_DIR/$rel_path" "$dest"
+  else
+    curl -fsSL "$GITHUB_RAW/$rel_path" -o "$dest"
+  fi
+}
+
+convert_manually() {
+  cd "$TARGET"
+
+  # Ensure we're on the main branch
+  git checkout "$MAIN_BRANCH" --quiet 2>/dev/null || true
+
+  # Capture list of files to clean up later
+  ROOT_ITEMS=()
+  for item in * .[!.]* ..?*; do
+    [ -e "$item" ] || continue
+    case "$item" in
+      .git) ;;
+      *)    ROOT_ITEMS+=("$item") ;;
+    esac
+  done
+
+  # Convert .git to .bare
+  mv .git .bare
+  echo "gitdir: ./.bare" > .git
+
+  # Mark as bare and remove the working tree index so git doesn't think
+  # the main branch is already checked out
+  git config core.bare true
+  rm -f .bare/index
+
+  # Configure for worktree use
+  git config remote.origin.fetch "+refs/heads/*:refs/remotes/origin/*" 2>/dev/null || true
+  git config worktree.useRelativePaths true
+
+  # Create main worktree
+  git worktree add main "$MAIN_BRANCH"
+
+  # Clean up old working tree files from root
+  for item in "${ROOT_ITEMS[@]}"; do
+    rm -rf "$item"
+  done
+
+  # Install mise infrastructure
+  TASK_FILES=(wt-add wt-rm wt-ls repo-public repo-private remote-add)
+  mkdir -p .mise/tasks
+  for task in "${TASK_FILES[@]}"; do
+    fetch_template_file ".mise/tasks/$task" ".mise/tasks/$task"
+    chmod +x ".mise/tasks/$task"
+  done
+
+  cat > .mise.toml <<'TOML'
+# ABOUTME: Mise configuration for the project root.
+# ABOUTME: Task scripts live in .mise/tasks/.
+TOML
+
+  # Install agent instructions
+  fetch_template_file "AGENTS.md" "AGENTS.md"
+  ln -sf AGENTS.md CLAUDE.md
+
+  # Create support directories
+  mkdir -p _ .claude
+
+  # Trust mise config
+  if command -v mise &>/dev/null; then
+    mise trust --quiet 2>/dev/null || mise trust
+  fi
+}
+
+# --- Pick strategy ---
+
+if command -v uvx &>/dev/null; then
+  convert_with_copier
+else
+  echo "  (uvx not found, using manual conversion without .copier-answers.yml)"
+  convert_manually
+fi
+
+# --- Summary ---
+
+echo ""
+echo "Conversion complete!"
+echo "  Bare repo: .bare/"
+echo "  Worktree:  main/ ($MAIN_BRANCH)"
+if command -v uvx &>/dev/null; then
+  echo "  Update:    uvx copier update --trust"
+fi
+echo ""
+echo "Tasks (via mise):"
+echo "  mise run wt-add <branch> [base]  - Create a new worktree"
+echo "  mise run wt-rm <branch>          - Remove a worktree"
+echo "  mise run wt-ls                   - List all worktrees"
+echo ""
+echo "Next steps:"
+echo "  cd $TARGET"
+echo "  mise run wt-add <your-branch>"

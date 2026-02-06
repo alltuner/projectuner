@@ -78,6 +78,48 @@ mise run remote-add owner/repo
 - To compare branches from a worktree: `git diff main...<branch>`.
 - To fetch updates: `git fetch --all` from any worktree.
 
+## PR title conventions
+
+This project uses **conventional commit format** for PR titles. PR titles become commit
+messages after squash-merge, so they drive changelog generation and semantic versioning.
+
+### Format
+
+```text
+<type>[optional scope]: <description>
+```
+
+### Types
+
+- `feat:` New features (MINOR version bump)
+- `fix:` Bug fixes (PATCH version bump)
+- `docs:` Documentation changes
+- `chore:` Maintenance, dependencies
+- `refactor:` Code refactoring
+- `test:` Test changes
+- `perf:` Performance improvements
+- `ci:` CI/CD changes
+- `build:` Build system changes
+- `style:` Formatting, linting
+
+### Breaking changes
+
+Add `!` after the type to signal a breaking change (MAJOR version bump):
+
+```text
+feat!: remove deprecated API
+fix!: change database schema
+```
+
+### Examples
+
+```text
+feat: add OAuth authentication support
+fix: resolve Docker build failure
+docs: update installation guide
+chore: bump FastAPI dependency
+```
+
 ## Local excludes
 
 Each worktree has its own `.gitignore`. Use `.bare/info/exclude` for patterns that should
