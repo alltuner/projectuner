@@ -3,6 +3,7 @@
 
 _subdirectory: template
 _templates_suffix: .jinja
+_preserve_symlinks: true
 
 _tasks:
   - command: "chmod +x .mise/tasks/*"
