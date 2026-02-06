@@ -188,6 +188,18 @@ Files at the project root are outside version control. They're excluded via
 `.bare/info/exclude` (not `.gitignore`). The `setup` task pre-populates common patterns.
 To add your own, edit `.bare/info/exclude` directly.
 
+## Known issues
+
+### Starship shows branch name at the project root
+
+[Starship](https://starship.rs/)'s `git_branch` module has an `ignore_bare_repo` option, but
+it doesn't work with the gitdir pointer pattern (`.git` file pointing to `.bare/`). This is
+because Starship uses [gitoxide](https://github.com/GitoxideLabs/gitoxide) which
+[doesn't follow gitdir indirection when checking `is_bare()`](https://github.com/GitoxideLabs/gitoxide/issues/2402).
+
+The fix has been merged in gitoxide and is expected in the gitoxide release on 2026-02-22,
+after which Starship needs to bump its gitoxide dependency.
+
 ## Credit
 
 Based on the workflow from Ahmed el Gabri:
