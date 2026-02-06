@@ -2,6 +2,7 @@
 #MISE description="Create a new git worktree with a fresh branch"
 
 set -euo pipefail
+export GIT_DIR=.bare
 
 BRANCH="${1:?Usage: mise run wt-add <branch-name> [base-branch]}"
 BASE="${2:-main}"

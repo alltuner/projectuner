@@ -38,7 +38,6 @@ afterwards (see [Setting up a remote](#setting-up-a-remote)).
 ```
 my-project/
 ├── .bare/           # Bare git clone
-├── .git             # Pointer file to .bare
 ├── main/            # Worktree for the main branch
 ├── .mise/
 │   └── tasks/       # Project tasks

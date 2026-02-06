@@ -10,7 +10,7 @@ echo "Setting up worktree-based project..."
 if [ -n "$REMOTE_URL" ]; then
   # Clone existing remote as bare repository
   git clone --bare "$REMOTE_URL" .bare
-  echo "gitdir: ./.bare" > .git
+  export GIT_DIR=.bare
   git config remote.origin.fetch "+refs/heads/*:refs/remotes/origin/*"
   git config worktree.useRelativePaths true
   git fetch --all
@@ -18,7 +18,7 @@ if [ -n "$REMOTE_URL" ]; then
 else
   # Start a fresh bare repo with no remote
   git init --bare .bare
-  echo "gitdir: ./.bare" > .git
+  export GIT_DIR=.bare
   git config worktree.useRelativePaths true
 
   # Create an initial empty commit so worktrees can be added
@@ -27,25 +27,6 @@ else
   git update-ref refs/heads/main "$COMMIT"
   git worktree add main main
 fi
-
-# Set up local excludes (these stay outside version control)
-cat >> .bare/info/exclude << 'EXCLUDE'
-
-# Project-level files (outside version control)
-.mise/
-.mise.toml
-mise.toml
-_/
-.claude/
-.cursor/
-AGENTS.md
-CLAUDE.md
-*.env
-.env.*
-flake.nix
-flake.lock
-.copier-answers.yml
-EXCLUDE
 
 # Create directories for scratchpad and agent config
 mkdir -p _ .claude
@@ -57,7 +38,7 @@ echo "  Worktree:  main/"
 if [ -n "$REMOTE_URL" ]; then
   echo "  Remote:    $REMOTE_URL"
 else
-  echo "  Remote:    (none, add one later with: git remote add origin <url>)"
+  echo "  Remote:    (none, add one later with: mise run remote-add <owner/repo>)"
 fi
 echo ""
 echo "Tasks (via mise):"
@@ -66,4 +47,4 @@ echo "  mise run wt-rm <branch>          - Remove a worktree"
 echo "  mise run wt-ls                   - List all worktrees"
 echo ""
 echo "Next steps:"
-echo "  cd main/"
+echo "  mise run wt-add <your-branch>"

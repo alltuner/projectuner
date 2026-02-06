@@ -1,4 +1,4 @@
 #!/bin/bash
 #MISE description="List all active git worktrees"
 
-git worktree list
+GIT_DIR=.bare git worktree list

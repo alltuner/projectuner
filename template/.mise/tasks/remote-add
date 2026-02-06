@@ -2,6 +2,7 @@
 #MISE description="Add an existing GitHub repo as a remote and push main"
 
 set -euo pipefail
+export GIT_DIR=.bare
 
 REPO="${1:?Usage: mise run remote-add <owner/repo>}"
 NAME="${2:-origin}"
