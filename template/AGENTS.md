@@ -19,7 +19,8 @@ This project uses a **bare repo + worktree** structure. Read this before making 
 │       ├── wt-update    # Fetch remotes and fast-forward main
 │       ├── repo-public  # Create a public GitHub repo
 │       ├── repo-private # Create a private GitHub repo
-│       └── remote-add   # Add a remote to an existing repo
+│       ├── remote-add       # Add a remote to an existing repo
+│       └── template-update  # Update template files via copier
 ├── .mise.toml       # Mise configuration
 ├── _/               # Scratchpad for notes and one-off scripts
 ├── .claude/         # Agent configuration (outside version control)
@@ -82,6 +83,24 @@ mise run repo-private owner/repo-name
 # Or add an existing remote and fetch branches
 mise run remote-add owner/repo
 ```
+
+## Updating template files
+
+This project was scaffolded from a copier template. To pull in template updates:
+
+```bash
+mise run template-update
+```
+
+Extra arguments are passed through to `copier update`:
+
+```bash
+mise run template-update -- --vcs-ref v0.2.0   # pin to a specific template version
+mise run template-update -- --defaults          # accept all defaults without prompting
+```
+
+The task copies template-managed files to a temporary git repo (since copier doesn't
+work in bare repo roots), runs the update there, and syncs results back.
 
 ## When running commands
 
