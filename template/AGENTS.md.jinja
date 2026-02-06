@@ -10,10 +10,13 @@ This project uses a **bare repo + worktree** structure. Read this before making 
 ├── .git             # Pointer file (contains "gitdir: ./.bare")
 ├── {{ default_branch }}/           # Worktree for the {{ default_branch }} branch (keep pristine)
 ├── <feature>/       # Worktree for a feature branch
-├── bin/             # Helper scripts (outside version control)
-│   ├── wt-add       # Create a new worktree
-│   ├── wt-rm        # Remove a worktree
-│   └── wt-ls        # List worktrees
+├── .mise/
+│   └── tasks/       # Worktree management tasks (run via mise)
+│       ├── setup    # One-time project initialization
+│       ├── wt-add   # Create a new worktree
+│       ├── wt-rm    # Remove a worktree
+│       └── wt-ls    # List worktrees
+├── mise.toml        # Mise configuration
 ├── _/               # Scratchpad for notes and one-off scripts
 ├── .claude/         # Agent configuration (outside version control)
 └── AGENTS.md        # This file
@@ -27,28 +30,30 @@ This project uses a **bare repo + worktree** structure. Read this before making 
    that branch. There is no `git checkout` or `git switch` needed.
 3. **Git commands work from anywhere** in the project tree. The `.git` pointer file at the root
    connects everything to `.bare/`.
-4. **Files at the project root** (outside worktrees) are not tracked by git. The `bin/` scripts,
+4. **Files at the project root** (outside worktrees) are not tracked by git. The `.mise/` tasks,
    `AGENTS.md`, and config directories live here intentionally.
 
 ## Working with worktrees
 
+All worktree operations use mise tasks from the project root.
+
 Create a new worktree for a feature branch:
 
 ```bash
-bin/wt-add my-feature          # branches from {{ default_branch }}
-bin/wt-add my-feature develop  # branches from develop
+mise run wt-add my-feature          # branches from {{ default_branch }}
+mise run wt-add my-feature develop  # branches from develop
 ```
 
 List active worktrees:
 
 ```bash
-bin/wt-ls
+mise run wt-ls
 ```
 
 Remove a worktree when done:
 
 ```bash
-bin/wt-rm my-feature
+mise run wt-rm my-feature
 ```
 
 ## When running commands

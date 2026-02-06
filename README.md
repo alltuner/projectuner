@@ -11,12 +11,12 @@ each worktree is a full working copy of a branch.
 ## Prerequisites
 
 - git
-- [copier](https://copier.readthedocs.io/) (invoked via `uvx`)
+- [mise](https://mise.jdx.dev/) (task runner for worktree management)
 
 ## Usage
 
 ```bash
-uvx copier copy gh:dpoblador/projectuner ~/dev/my-project
+uvx copier copy gh:alltuner/projectuner ~/dev/my-project
 ```
 
 You'll be prompted for:
@@ -26,11 +26,9 @@ You'll be prompted for:
 | `project_name` | directory name | Name of the project |
 | `git_remote_url` | (required) | Remote URL to bare-clone |
 | `default_branch` | `main` | Primary branch name |
-| `include_scratchpad` | yes | Create `_/` for scripts and notes |
-| `include_claude_config` | yes | Create `.claude/` for agent settings |
 
-After answering, copier runs `setup.sh` which clones the bare repo, creates worktrees, and
-configures everything.
+After answering, copier trusts the mise config and runs `mise run setup`, which clones the
+bare repo, creates worktrees, and configures everything.
 
 ## What you get
 
@@ -39,42 +37,73 @@ my-project/
 ├── .bare/           # Bare git clone
 ├── .git             # Pointer file to .bare
 ├── main/            # Worktree for the default branch
-├── bin/
-│   ├── wt-add       # Create a new worktree
-│   ├── wt-rm        # Remove a worktree
-│   └── wt-ls        # List all worktrees
-├── _/               # Scratchpad (optional)
-├── .claude/         # Agent config (optional)
-├── AGENTS.md        # Instructions for AI agents
+├── .mise/
+│   └── tasks/       # Worktree management tasks
+│       ├── setup    # One-time project initialization
+│       ├── wt-add   # Create a new worktree
+│       ├── wt-rm    # Remove a worktree
+│       └── wt-ls    # List all worktrees
+├── mise.toml        # Mise configuration
+├── _/               # Scratchpad for scripts and notes
+├── .claude/         # Agent configuration
+├── AGENTS.md        # Instructions for AI coding agents
 ├── CLAUDE.md        # Symlink to AGENTS.md
-├── setup.sh         # The setup script (kept for reference)
 └── .copier-answers.yml
 ```
 
 ## Worktree workflow
 
+All worktree operations are mise tasks, run from the project root:
+
 ```bash
 # Start a new feature
-bin/wt-add my-feature
+mise run wt-add my-feature
 
 # Work in it
 cd my-feature/
 
 # List all worktrees
-bin/wt-ls
+mise run wt-ls
 
 # Clean up when done
-bin/wt-rm my-feature
+mise run wt-rm my-feature
 ```
 
 The `main/` worktree stays pristine as a clean reference for diffing. Never edit files in it
 directly.
+
+## Why bare repo + worktrees?
+
+The traditional git workflow (checkout, stash, switch) has a hidden cost: every branch switch
+tears down your working state and rebuilds it. With worktrees:
+
+- **No context switching tax**. Each branch is its own directory. Your editor, terminal, and
+  build cache stay intact.
+- **Parallel work**. Run tests on one branch while coding on another.
+- **AI agent isolation**. Spawn a worktree per agent. They can't interfere with each other or
+  your active work.
+- **Clean diffing**. Keep `main/` pristine and diff any branch against it without stashing.
 
 ## AI agent support
 
 The generated `AGENTS.md` (with `CLAUDE.md` symlinked to it) teaches AI coding agents how
 the worktree structure works: where to run commands, how to create branches, and what lives
 outside version control.
+
+## Mise tasks reference
+
+| Task | Usage | Description |
+|------|-------|-------------|
+| `setup` | `mise run setup` | One-time initialization (runs automatically during scaffolding). |
+| `wt-add` | `mise run wt-add <branch> [base]` | Create a new worktree. Defaults to branching from the default branch. |
+| `wt-rm` | `mise run wt-rm <branch>` | Remove a worktree and its directory. |
+| `wt-ls` | `mise run wt-ls` | List all active worktrees. |
+
+## Local excludes
+
+Files at the project root are outside version control. They're excluded via
+`.bare/info/exclude` (not `.gitignore`). The `setup` task pre-populates common patterns.
+To add your own, edit `.bare/info/exclude` directly.
 
 ## Credit
 

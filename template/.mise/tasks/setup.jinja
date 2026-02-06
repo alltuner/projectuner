@@ -1,6 +1,5 @@
 #!/bin/bash
-# ABOUTME: Initializes a git worktree-based project from a bare clone.
-# ABOUTME: Creates the bare repo, pointer file, worktrees, and local excludes.
+# mise description="Initialize the bare repo and worktree structure (runs once during scaffolding)"
 
 set -euo pipefail
 
@@ -31,19 +30,18 @@ git worktree add "$DEFAULT_BRANCH" "$DEFAULT_BRANCH"
 cat >> .bare/info/exclude << 'EXCLUDE'
 
 # Project-level files (outside version control)
-bin/
+.mise/
+.mise.toml
+mise.toml
 _/
 .claude/
 .cursor/
-setup.sh
 AGENTS.md
 CLAUDE.md
 *.env
 .env.*
 flake.nix
 flake.lock
-mise.toml
-.mise.toml
 .copier-answers.yml
 EXCLUDE
 
@@ -53,18 +51,15 @@ mkdir -p _ .claude
 # Create CLAUDE.md symlink pointing to AGENTS.md
 ln -sf AGENTS.md CLAUDE.md
 
-# Make helper scripts executable
-chmod +x bin/*
-
 echo ""
 echo "Project initialized!"
 echo "  Bare repo: .bare/"
 echo "  Worktree:  $DEFAULT_BRANCH/"
 echo ""
-echo "Helper scripts:"
-echo "  bin/wt-add <branch> [base]  - Create a new worktree"
-echo "  bin/wt-rm <branch>          - Remove a worktree"
-echo "  bin/wt-ls                   - List all worktrees"
+echo "Tasks (via mise):"
+echo "  mise run wt-add <branch> [base]  - Create a new worktree"
+echo "  mise run wt-rm <branch>          - Remove a worktree"
+echo "  mise run wt-ls                   - List all worktrees"
 echo ""
 echo "Next steps:"
 echo "  cd $DEFAULT_BRANCH/"

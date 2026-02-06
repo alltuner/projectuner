@@ -5,7 +5,11 @@ _subdirectory: template
 _templates_suffix: .jinja
 
 _tasks:
-  - command: bash setup.sh
+  - command: "chmod +x .mise/tasks/*"
+    when: "{{ _copier_operation == 'copy' }}"
+  - command: "mise trust"
+    when: "{{ _copier_operation == 'copy' }}"
+  - command: "mise run setup"
     when: "{{ _copier_operation == 'copy' }}"
 
 _message_before_copy: |

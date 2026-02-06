@@ -1,0 +1,4 @@
+#!/bin/bash
+# mise description="List all active git worktrees"
+
+git worktree list
