@@ -1,17 +1,25 @@
 #!/bin/bash
-#MISE description="Add an existing GitHub repo as a remote and push main"
+#MISE description="Add an existing GitHub repo as a remote and fetch branches"
 
 set -euo pipefail
 
-REPO="${1:?Usage: mise run remote-add <owner/repo>}"
+REPO="${1:?Usage: mise run remote-add <owner/repo> [remote-name]}"
 NAME="${2:-origin}"
 URL="git@github.com:${REPO}.git"
+
+if git remote get-url "$NAME" &>/dev/null; then
+  echo "Error: remote '$NAME' already exists." >&2
+  echo "  Current URL: $(git remote get-url "$NAME")" >&2
+  echo "  To replace it: git remote set-url $NAME $URL" >&2
+  exit 1
+fi
 
 git remote add "$NAME" "$URL"
 git config "remote.$NAME.fetch" "+refs/heads/*:refs/remotes/$NAME/*"
 git fetch "$NAME"
-git push -u "$NAME" main
 
 echo ""
-echo "Remote '$NAME' added and main branch pushed."
+echo "Remote '$NAME' added and branches fetched."
 echo "  $URL"
+echo ""
+echo "To push main: git push -u $NAME main"
