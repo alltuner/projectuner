@@ -30,13 +30,3 @@ default_branch:
   type: str
   help: Default branch name
   default: main
-
-include_scratchpad:
-  type: bool
-  help: Create a _/ scratchpad directory for scripts and notes?
-  default: true
-
-include_claude_config:
-  type: bool
-  help: Create a .claude/ configuration directory for AI agent settings?
-  default: true
