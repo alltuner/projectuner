@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.2](https://github.com/alltuner/projectuner/compare/v0.1.1...v0.1.2) (2026-02-06)
+
+
+### Miscellaneous Chores
+
+* trigger release-please ([#5](https://github.com/alltuner/projectuner/issues/5)) ([fdda092](https://github.com/alltuner/projectuner/commit/fdda0929295da953d467c4cfae09e865bf172884))
+
 ## [0.1.1](https://github.com/alltuner/projectuner/compare/v0.1.0...v0.1.1) (2026-02-06)
 
 
