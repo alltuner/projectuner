@@ -1,6 +1,5 @@
 #!/bin/bash
-# mise description="Create a new git worktree with a fresh branch"
-# mise usage="wt-add <branch> [base-branch]"
+#MISE description="Create a new git worktree with a fresh branch"
 
 set -euo pipefail
 

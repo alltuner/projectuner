@@ -1,5 +1,5 @@
 #!/bin/bash
-# mise description="Add an existing GitHub repo as a remote and push main"
+#MISE description="Add an existing GitHub repo as a remote and push main"
 
 set -euo pipefail
 

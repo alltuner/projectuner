@@ -1,6 +1,5 @@
 #!/bin/bash
-# mise description="Remove a git worktree and its directory"
-# mise usage="wt-rm <branch>"
+#MISE description="Remove a git worktree and its directory"
 
 set -euo pipefail
 

@@ -1,5 +1,5 @@
 #!/bin/bash
-# mise description="Create a public GitHub repo and push main"
+#MISE description="Create a public GitHub repo and push main"
 
 set -euo pipefail
 
