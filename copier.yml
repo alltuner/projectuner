@@ -18,7 +18,7 @@ _message_before_copy: |
 _message_after_copy: |
   Project scaffolded successfully!
   cd into your project and start working:
-    cd main/
+    cd {{ _copier_conf.dst_path }}/main/
 
 git_remote_url:
   type: str
