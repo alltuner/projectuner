@@ -6,9 +6,9 @@ _templates_suffix: .jinja
 _preserve_symlinks: true
 
 _tasks:
-  - command: "bash .mise/tasks/setup"
+  - command: "bash setup.sh && rm setup.sh"
     when: "{{ _copier_operation == 'copy' }}"
-  - command: "bash .mise/tasks/trust-or-warn"
+  - command: "bash trust-or-warn.sh && rm trust-or-warn.sh"
     when: "{{ _copier_operation == 'copy' }}"
 
 _message_before_copy: |

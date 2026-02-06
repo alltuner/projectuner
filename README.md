@@ -42,7 +42,6 @@ my-project/
 ├── main/            # Worktree for the main branch
 ├── .mise/
 │   └── tasks/       # Project tasks
-│       ├── setup        # One-time project initialization
 │       ├── wt-add       # Create a new worktree
 │       ├── wt-rm        # Remove a worktree
 │       ├── wt-ls        # List all worktrees
@@ -116,7 +115,6 @@ outside version control.
 
 | Task | Usage | Description |
 |------|-------|-------------|
-| `setup` | `mise run setup` | One-time initialization (runs automatically during scaffolding). |
 | `wt-add` | `mise run wt-add <branch> [base]` | Create a new worktree. Defaults to branching from `main`. |
 | `wt-rm` | `mise run wt-rm <branch>` | Remove a worktree and its directory. |
 | `wt-ls` | `mise run wt-ls` | List all active worktrees. |

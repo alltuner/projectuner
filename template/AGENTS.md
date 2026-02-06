@@ -12,7 +12,6 @@ This project uses a **bare repo + worktree** structure. Read this before making 
 ├── <feature>/       # Worktree for a feature branch
 ├── .mise/
 │   └── tasks/       # Project tasks (run via mise)
-│       ├── setup       # One-time project initialization
 │       ├── wt-add      # Create a new worktree
 │       ├── wt-rm       # Remove a worktree
 │       ├── wt-ls       # List worktrees

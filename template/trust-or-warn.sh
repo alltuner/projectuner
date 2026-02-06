@@ -1,7 +1,4 @@
 #!/bin/bash
-#MISE description="Trust mise config or warn if mise is not installed"
-#MISE hide=true
-
 if command -v mise &>/dev/null; then
   mise trust
 else
