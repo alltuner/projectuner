@@ -93,6 +93,55 @@ mise run remote-add myorg/my-project
 `repo-public` and `repo-private` use `gh repo create` under the hood, so they'll fail if
 the repo already exists (which is what you want).
 
+## Updating a scaffolded project
+
+When the projectuner template gets new features or fixes, pull them into your project:
+
+```bash
+cd ~/dev/my-project
+uvx copier update --trust
+```
+
+Copier reads `.copier-answers.yml` to know which template version you're on, computes a diff
+against the latest version, and applies changes. It will prompt you to resolve conflicts if
+any of your local changes overlap with template updates.
+
+To update to a specific version:
+
+```bash
+uvx copier update --trust --vcs-ref=v0.2.0
+```
+
+> **Note**: `copier update` requires `.copier-answers.yml`, which is created automatically
+> when scaffolding with copier or converting with `uvx` available. If you converted manually
+> (without `uvx`), re-run the conversion script to pick up template changes.
+
+## Converting an existing clone
+
+Already have a regular `git clone` and want to switch to the worktree structure? The
+conversion script restructures it in place:
+
+```bash
+# Run directly from a local copy of this repo
+./scripts/convert-to-worktree ~/dev/my-project
+
+# Or pipe it from GitHub (no local clone needed)
+bash <(curl -fsSL https://raw.githubusercontent.com/alltuner/projectuner/main/scripts/convert-to-worktree) ~/dev/my-project
+```
+
+When `uvx` is available, the script uses copier under the hood. This gives you
+`.copier-answers.yml`, so future `copier update --trust` works. When `uvx` is not available,
+it falls back to a manual conversion (no `.copier-answers.yml`).
+
+The script will:
+
+1. Validate the directory is a regular git clone with a clean working tree
+2. Scaffold the worktree structure via copier (or manually as fallback)
+3. Preserve all branches, tags, and remote configuration
+
+Requirements: the working tree must be clean (no uncommitted or untracked changes). Commit
+or stash everything first.
+
 ## Why bare repo + worktrees?
 
 The traditional git workflow (checkout, stash, switch) has a hidden cost: every branch switch
