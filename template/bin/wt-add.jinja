@@ -1,0 +1,12 @@
+#!/bin/bash
+# ABOUTME: Creates a new git worktree with a fresh branch.
+# ABOUTME: Usage: wt-add <branch-name> [base-branch]
+
+set -euo pipefail
+
+BRANCH="${1:?Usage: wt-add <branch-name> [base-branch]}"
+BASE="${2:-{{ default_branch }}}"
+
+git worktree add -b "$BRANCH" "$BRANCH" "$BASE"
+echo "Created worktree '$BRANCH' from '$BASE'"
+echo "  cd $BRANCH/"

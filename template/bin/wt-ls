@@ -1,0 +1,5 @@
+#!/bin/bash
+# ABOUTME: Lists all active git worktrees in the project.
+# ABOUTME: Wrapper around git worktree list for convenience.
+
+git worktree list

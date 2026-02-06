@@ -1,0 +1,63 @@
+# Agent Instructions
+
+This project uses a **bare repo + worktree** structure. Read this before making changes.
+
+## Project layout
+
+```
+{{ project_name }}/
+├── .bare/           # Bare git clone (all git object data lives here)
+├── .git             # Pointer file (contains "gitdir: ./.bare")
+├── {{ default_branch }}/           # Worktree for the {{ default_branch }} branch (keep pristine)
+├── <feature>/       # Worktree for a feature branch
+├── bin/             # Helper scripts (outside version control)
+│   ├── wt-add       # Create a new worktree
+│   ├── wt-rm        # Remove a worktree
+│   └── wt-ls        # List worktrees
+{% if include_scratchpad %}├── _/               # Scratchpad for notes and one-off scripts
+{% endif %}{% if include_claude_config %}├── .claude/         # Agent configuration (outside version control)
+{% endif %}└── AGENTS.md        # This file
+```
+
+## Key rules
+
+1. **Never work directly in `{{ default_branch }}/`**. It is a clean reference. Use it for diffing and
+   basing new branches, not for edits.
+2. **Each worktree is a full checkout** of a branch. You `cd` into a worktree directory to work on
+   that branch. There is no `git checkout` or `git switch` needed.
+3. **Git commands work from anywhere** in the project tree. The `.git` pointer file at the root
+   connects everything to `.bare/`.
+4. **Files at the project root** (outside worktrees) are not tracked by git. The `bin/` scripts,
+   `AGENTS.md`, and config directories live here intentionally.
+
+## Working with worktrees
+
+Create a new worktree for a feature branch:
+
+```bash
+bin/wt-add my-feature          # branches from {{ default_branch }}
+bin/wt-add my-feature develop  # branches from develop
+```
+
+List active worktrees:
+
+```bash
+bin/wt-ls
+```
+
+Remove a worktree when done:
+
+```bash
+bin/wt-rm my-feature
+```
+
+## When running commands
+
+- Always `cd` into the appropriate worktree directory before running build, test, or lint commands.
+- If you need to compare branches, use `git diff {{ default_branch }}...<branch>` from the project root.
+- To fetch updates: `git fetch --all` from anywhere in the project.
+
+## Local excludes
+
+Project-root files are excluded via `.bare/info/exclude`, not `.gitignore`. If you add new
+untracked files at the root, add their patterns there.

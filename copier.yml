@@ -1,0 +1,42 @@
+# ABOUTME: Copier template configuration for scaffolding git worktree-based projects.
+# ABOUTME: Defines questions, file exclusions, and post-copy tasks.
+
+_subdirectory: template
+_templates_suffix: .jinja
+
+_tasks:
+  - command: bash setup.sh
+    when: "{{ _copier_operation == 'copy' }}"
+
+_message_before_copy: |
+  This template scaffolds a git worktree-based project using the bare repo pattern.
+  You will need a git remote URL to clone from.
+
+_message_after_copy: |
+  Project scaffolded successfully!
+  cd into your project and start working:
+    cd {{ default_branch }}/
+
+project_name:
+  type: str
+  help: Project name
+  default: "{{ _folder_name }}"
+
+git_remote_url:
+  type: str
+  help: Git remote URL to clone (e.g. git@github.com:user/repo.git)
+
+default_branch:
+  type: str
+  help: Default branch name
+  default: main
+
+include_scratchpad:
+  type: bool
+  help: Create a _/ scratchpad directory for scripts and notes?
+  default: true
+
+include_claude_config:
+  type: bool
+  help: Create a .claude/ configuration directory for AI agent settings?
+  default: true
