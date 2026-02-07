@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.6](https://github.com/alltuner/projectuner/compare/v0.1.5...v0.1.6) (2026-02-07)
+
+
+### Bug Fixes
+
+* preserve gitignored files during convert-to-worktree ([#16](https://github.com/alltuner/projectuner/issues/16)) ([915e274](https://github.com/alltuner/projectuner/commit/915e274e54831c246d17e347c1d15856c9e1264f))
+
 ## [0.1.5](https://github.com/alltuner/projectuner/compare/v0.1.4...v0.1.5) (2026-02-06)
 
 
