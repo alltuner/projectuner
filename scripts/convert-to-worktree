@@ -93,6 +93,23 @@ fi
 echo "Converting $TARGET to worktree structure..."
 echo "  Main branch: $MAIN_BRANCH"
 
+# --- Preserve gitignored files ---
+# Gitignored files (e.g. .env) aren't tracked by git and would be destroyed
+# during conversion. Save them to a temp dir and restore to the project root.
+
+IGNORED_FILES=$(git ls-files --others --ignored --exclude-standard)
+IGNORED_BACKUP=""
+
+if [ -n "$IGNORED_FILES" ]; then
+  echo "  Git-ignored files found (will preserve in project root):"
+  echo "$IGNORED_FILES" | sed 's/^/    /'
+  IGNORED_BACKUP=$(mktemp -d)
+  while IFS= read -r f; do
+    mkdir -p "$IGNORED_BACKUP/$(dirname "$f")"
+    cp -a "$f" "$IGNORED_BACKUP/$f"
+  done <<< "$IGNORED_FILES"
+fi
+
 # ============================================================
 # Strategy 1: Use copier (preferred, gives .copier-answers.yml)
 # ============================================================
@@ -108,6 +125,7 @@ convert_with_copier() {
       mv "$BACKUP" "$TARGET"
       echo "Error: conversion failed. Original repository restored." >&2
     fi
+    rm -rf "${IGNORED_BACKUP:-}" 2>/dev/null || true
   }
   trap cleanup_backup EXIT
 
@@ -224,6 +242,17 @@ if command -v uvx &>/dev/null; then
 else
   echo "  (uvx not found, using manual conversion without .copier-answers.yml)"
   convert_manually
+fi
+
+# --- Restore gitignored files ---
+
+if [ -n "$IGNORED_BACKUP" ]; then
+  cd "$TARGET"
+  while IFS= read -r f; do
+    mkdir -p "$(dirname "$f")"
+    cp -a "$IGNORED_BACKUP/$f" "$f"
+  done <<< "$IGNORED_FILES"
+  rm -rf "$IGNORED_BACKUP"
 fi
 
 # --- Summary ---
