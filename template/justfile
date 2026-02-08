@@ -33,12 +33,12 @@ wt-add branch base='main':
   fi
   echo "  cd $BRANCH/"
 
-# Remove a git worktree and its local branch
-wt-rm branch:
+# Remove a git worktree and its local branch (accepts branch name or folder path)
+wt-rm target:
   #!/bin/bash
   set -euo pipefail
 
-  BRANCH="{{ branch }}"
+  BRANCH="$(basename "{{ target }}")"
 
   if [ "$BRANCH" = "main" ]; then
     echo "Error: refusing to remove the main worktree." >&2
@@ -54,12 +54,12 @@ wt-rm branch:
     echo "Removed worktree and branch '$BRANCH'"
   fi
 
-# Remove a worktree and delete its local and remote branches
-wt-destroy branch:
+# Remove a worktree and delete its local and remote branches (accepts branch name or folder path)
+wt-destroy target:
   #!/bin/bash
   set -euo pipefail
 
-  BRANCH="{{ branch }}"
+  BRANCH="$(basename "{{ target }}")"
 
   if [ "$BRANCH" = "main" ]; then
     echo "Error: refusing to destroy the main worktree." >&2
