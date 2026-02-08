@@ -12,8 +12,8 @@ each worktree is a full working copy of a branch.
 ## Prerequisites
 
 - git
-- [gh](https://cli.github.com/) (GitHub CLI, for repo creation tasks)
-- [mise](https://mise.jdx.dev/) (task runner for worktree management)
+- [gh](https://cli.github.com/) (GitHub CLI, for repo creation recipes)
+- [uv](https://docs.astral.sh/uv/) (Python package manager, used to run just and copier)
 
 ## Usage
 
@@ -21,8 +21,8 @@ each worktree is a full working copy of a branch.
 uvx copier copy --trust gh:alltuner/projectuner ~/dev/my-project
 ```
 
-The `--trust` flag is required because this template runs post-copy tasks (bare clone setup
-via mise). Without it, copier will refuse to execute them.
+The `--trust` flag is required because this template runs post-copy tasks (bare clone setup).
+Without it, copier will refuse to execute them.
 
 You'll be prompted for:
 
@@ -41,17 +41,7 @@ my-project/
 ├── .bare/           # Bare git clone
 ├── .git             # Pointer file to .bare
 ├── main/            # Worktree for the main branch
-├── .mise/
-│   └── tasks/       # Project tasks
-│       ├── wt-add       # Create a new worktree
-│       ├── wt-rm        # Remove a worktree
-│       ├── wt-destroy   # Remove worktree + local + remote branch
-│       ├── wt-ls        # List all worktrees
-│       ├── wt-update    # Fetch remotes and fast-forward main
-│       ├── repo-public  # Create a public GitHub repo
-│       ├── repo-private # Create a private GitHub repo
-│       └── remote-add   # Add a remote to an existing repo
-├── .mise.toml       # Mise configuration
+├── justfile         # Worktree management recipes
 ├── _/               # Scratchpad for scripts and notes
 ├── .claude/         # Agent configuration
 ├── AGENTS.md        # Instructions for AI coding agents
@@ -61,26 +51,28 @@ my-project/
 
 ## Worktree workflow
 
-All worktree operations are mise tasks, run from the project root:
+All worktree operations are just recipes, run from the project root. If you have
+[just](https://github.com/casey/just) installed, you can use `just <recipe>` directly
+instead of the `uv run --from just-bin` prefix.
 
 ```bash
 # Start a new feature
-mise run wt-add my-feature
+uv run --from just-bin just wt-add my-feature
 
 # Work in it
 cd my-feature/
 
 # List all worktrees
-mise run wt-ls
+uv run --from just-bin just wt-ls
 
 # Fetch latest and fast-forward main
-mise run wt-update
+uv run --from just-bin just wt-update
 
 # Clean up when done (keeps remote branch)
-mise run wt-rm my-feature
+uv run --from just-bin just wt-rm my-feature
 
 # Or nuke everything: worktree + local + remote branch
-mise run wt-destroy my-feature
+uv run --from just-bin just wt-destroy my-feature
 ```
 
 The `main/` worktree stays pristine as a clean reference for diffing. Never edit files in it
@@ -92,11 +84,11 @@ If you started with a fresh repo (no remote URL), connect it to GitHub:
 
 ```bash
 # Create a new GitHub repo and push (pick one)
-mise run repo-private myorg/my-project
-mise run repo-public myorg/my-project
+uv run --from just-bin just repo-private myorg/my-project
+uv run --from just-bin just repo-public myorg/my-project
 
 # Or add an existing remote
-mise run remote-add myorg/my-project
+uv run --from just-bin just remote-add myorg/my-project
 ```
 
 `repo-public` and `repo-private` use `gh repo create` under the hood, so they'll fail if
@@ -135,7 +127,8 @@ conversion script restructures it in place:
 ./scripts/convert-to-worktree ~/dev/my-project
 
 # Or pipe it from GitHub (no local clone needed)
-bash <(curl -fsSL https://raw.githubusercontent.com/alltuner/projectuner/main/scripts/convert-to-worktree) ~/dev/my-project
+bash <(gh api repos/alltuner/projectuner/contents/scripts/convert-to-worktree \
+  -H "Accept: application/vnd.github.raw+json") ~/dev/my-project
 ```
 
 When `uvx` is available, the script uses copier under the hood. This gives you
@@ -169,18 +162,19 @@ The generated `AGENTS.md` (with `CLAUDE.md` symlinked to it) teaches AI coding a
 the worktree structure works: where to run commands, how to create branches, and what lives
 outside version control.
 
-## Mise tasks reference
+## Recipe reference
 
-| Task | Usage | Description |
-|------|-------|-------------|
-| `wt-add` | `mise run wt-add <branch> [base]` | Create a new worktree. Fetches remotes first, defaults to branching from `main`. |
-| `wt-rm` | `mise run wt-rm <branch>` | Remove a worktree and its local branch. |
-| `wt-destroy` | `mise run wt-destroy <branch>` | Remove a worktree and delete both local and remote branches. |
-| `wt-ls` | `mise run wt-ls` | List all active worktrees. |
-| `wt-update` | `mise run wt-update` | Fetch all remotes and fast-forward `main`. |
-| `repo-public` | `mise run repo-public <owner/repo>` | Create a public GitHub repo, set up remote, and push `main`. |
-| `repo-private` | `mise run repo-private <owner/repo>` | Create a private GitHub repo, set up remote, and push `main`. |
-| `remote-add` | `mise run remote-add <owner/repo> [name]` | Add an existing GitHub repo as remote and push `main`. Defaults remote name to `origin`. |
+| Recipe | Usage | Description |
+|--------|-------|-------------|
+| `wt-add` | `just wt-add <branch> [base]` | Create a new worktree. Fetches remotes first, defaults to branching from `main`. |
+| `wt-rm` | `just wt-rm <branch>` | Remove a worktree and its local branch. |
+| `wt-destroy` | `just wt-destroy <branch>` | Remove a worktree and delete both local and remote branches. |
+| `wt-ls` | `just wt-ls` | List all active worktrees. |
+| `wt-update` | `just wt-update` | Fetch all remotes and fast-forward `main`. |
+| `repo-public` | `just repo-public <owner/repo>` | Create a public GitHub repo, set up remote, and push `main`. |
+| `repo-private` | `just repo-private <owner/repo>` | Create a private GitHub repo, set up remote, and push `main`. |
+| `remote-add` | `just remote-add <owner/repo> [name]` | Add an existing GitHub repo as remote and push `main`. Defaults remote name to `origin`. |
+| `template-update` | `just template-update [args]` | Update template files via copier. |
 
 ## Local excludes
 
@@ -207,6 +201,6 @@ Based on the workflow from Ahmed el Gabri:
 - [Git Worktrees Done Right](https://gabri.me/blog/git-worktrees-done-right) -- the bare repo
   + worktree pattern that this template scaffolds.
 - [git-wt: Worktrees Simplified](https://gabri.me/blog/git-wt) -- a standalone CLI tool that
-  wraps the same pattern. Several of our mise tasks (`wt-update`, `wt-destroy`, fetch-before-add)
-  are inspired by `git-wt`'s approach. If you prefer a single CLI over mise tasks, check out
+  wraps the same pattern. Several of our just recipes (`wt-update`, `wt-destroy`, fetch-before-add)
+  are inspired by `git-wt`'s approach. If you prefer a single CLI over just recipes, check out
   [git-wt](https://github.com/ahmedelgabri/git-wt).

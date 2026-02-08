@@ -4,13 +4,13 @@
 
 set -euo pipefail
 
-GITHUB_RAW="https://raw.githubusercontent.com/alltuner/projectuner/main/template"
-GITHUB_TEMPLATE="gh:alltuner/projectuner"
+GITHUB_REPO="alltuner/projectuner"
+GITHUB_TEMPLATE="gh:$GITHUB_REPO"
 
 # Detect if running from within the projectuner repo (for offline manual fallback)
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]:-$0}")" 2>/dev/null && pwd || echo "")"
 TEMPLATE_DIR="${SCRIPT_DIR:+$SCRIPT_DIR/../template}"
-if [ -n "$TEMPLATE_DIR" ] && [ ! -d "$TEMPLATE_DIR/.mise" ]; then
+if [ -n "$TEMPLATE_DIR" ] && [ ! -f "$TEMPLATE_DIR/justfile" ]; then
   TEMPLATE_DIR=""
 fi
 
@@ -26,7 +26,7 @@ After conversion, the directory will have:
   .bare/           Bare git repository (was .git/)
   .git             Pointer file to .bare/
   main/            Worktree for the main branch
-  .mise/tasks/     Worktree management tasks
+  justfile         Worktree management recipes
   _/               Scratchpad directory
   .claude/         Agent configuration directory
   AGENTS.md        Agent instructions
@@ -168,7 +168,8 @@ fetch_template_file() {
   if [ -n "$TEMPLATE_DIR" ] && [ -f "$TEMPLATE_DIR/$rel_path" ]; then
     cp "$TEMPLATE_DIR/$rel_path" "$dest"
   else
-    curl -fsSL "$GITHUB_RAW/$rel_path" -o "$dest"
+    gh api "repos/$GITHUB_REPO/contents/template/$rel_path" \
+      -H "Accept: application/vnd.github.raw+json" > "$dest"
   fi
 }
 
@@ -209,18 +210,8 @@ convert_manually() {
     rm -rf "$item"
   done
 
-  # Install mise infrastructure
-  TASK_FILES=(wt-add wt-rm wt-destroy wt-ls wt-update repo-public repo-private remote-add template-update)
-  mkdir -p .mise/tasks
-  for task in "${TASK_FILES[@]}"; do
-    fetch_template_file ".mise/tasks/$task" ".mise/tasks/$task"
-    chmod +x ".mise/tasks/$task"
-  done
-
-  cat > .mise.toml <<'TOML'
-# ABOUTME: Mise configuration for the project root.
-# ABOUTME: Task scripts live in .mise/tasks/.
-TOML
+  # Install justfile
+  fetch_template_file "justfile" "justfile"
 
   # Install agent instructions
   fetch_template_file "AGENTS.md" "AGENTS.md"
@@ -228,11 +219,6 @@ TOML
 
   # Create support directories
   mkdir -p _ .claude
-
-  # Trust mise config
-  if command -v mise &>/dev/null; then
-    mise trust --quiet 2>/dev/null || mise trust
-  fi
 }
 
 # --- Pick strategy ---
@@ -262,14 +248,14 @@ echo "Conversion complete!"
 echo "  Bare repo: .bare/"
 echo "  Worktree:  main/ ($MAIN_BRANCH)"
 if command -v uvx &>/dev/null; then
-  echo "  Update:    mise run template-update"
+  echo "  Update:    uv run --from just-bin just template-update"
 fi
 echo ""
-echo "Tasks (via mise):"
-echo "  mise run wt-add <branch> [base]  - Create a new worktree"
-echo "  mise run wt-rm <branch>          - Remove a worktree"
-echo "  mise run wt-ls                   - List all worktrees"
+echo "Recipes (via just):"
+echo "  uv run --from just-bin just wt-add <branch> [base]  - Create a new worktree"
+echo "  uv run --from just-bin just wt-rm <branch>          - Remove a worktree"
+echo "  uv run --from just-bin just wt-ls                   - List all worktrees"
 echo ""
 echo "Next steps:"
 echo "  cd $TARGET"
-echo "  mise run wt-add <your-branch>"
+echo "  uv run --from just-bin just wt-add <your-branch>"

@@ -10,18 +10,7 @@ This project uses a **bare repo + worktree** structure. Read this before making 
 ├── .git             # Pointer file (contains "gitdir: ./.bare")
 ├── main/            # Worktree for the main branch (keep pristine)
 ├── <feature>/       # Worktree for a feature branch
-├── .mise/
-│   └── tasks/       # Project tasks (run via mise)
-│       ├── wt-add       # Create a new worktree
-│       ├── wt-rm        # Remove a worktree
-│       ├── wt-destroy   # Remove worktree + local + remote branch
-│       ├── wt-ls        # List worktrees
-│       ├── wt-update    # Fetch remotes and fast-forward main
-│       ├── repo-public  # Create a public GitHub repo
-│       ├── repo-private # Create a private GitHub repo
-│       ├── remote-add       # Add a remote to an existing repo
-│       └── template-update  # Update template files via copier
-├── .mise.toml       # Mise configuration
+├── justfile         # Worktree management recipes (run via just)
 ├── _/               # Scratchpad for notes and one-off scripts
 ├── .claude/         # Agent configuration (outside version control)
 └── AGENTS.md        # This file
@@ -36,39 +25,40 @@ This project uses a **bare repo + worktree** structure. Read this before making 
 3. **The project root is a container, not a working directory**. The `.git` pointer file connects
    to `.bare/`. Running `git status` at the root will say "must be run in a work tree", which
    is correct. Always `cd` into a worktree to do git operations on that branch.
-4. **Files at the project root** (outside worktrees) are not tracked by git. The `.mise/` tasks,
+4. **Files at the project root** (outside worktrees) are not tracked by git. The `justfile`,
    `AGENTS.md`, and config directories live here intentionally.
 
 ## Working with worktrees
 
-All worktree operations use mise tasks from the project root.
+All worktree operations use just recipes from the project root. If just is not installed,
+use `uv run --from just-bin just` instead of `just`.
 
 Create a new worktree for a feature branch:
 
 ```bash
-mise run wt-add my-feature          # branches from main
-mise run wt-add my-feature develop  # branches from develop
+just wt-add my-feature          # branches from main
+just wt-add my-feature develop  # branches from develop
 ```
 
 List active worktrees:
 
 ```bash
-mise run wt-ls
+just wt-ls
 ```
 
 Fetch latest from all remotes and fast-forward main:
 
 ```bash
-mise run wt-update
+just wt-update
 ```
 
 Remove a worktree when done:
 
 ```bash
-mise run wt-rm my-feature
+just wt-rm my-feature
 
 # Or remove worktree + local + remote branch in one shot
-mise run wt-destroy my-feature
+just wt-destroy my-feature
 ```
 
 ## Setting up a remote
@@ -77,11 +67,11 @@ If the project was created without a remote URL, use one of these to connect it:
 
 ```bash
 # Create a new GitHub repo (public or private) and push
-mise run repo-public owner/repo-name
-mise run repo-private owner/repo-name
+just repo-public owner/repo-name
+just repo-private owner/repo-name
 
 # Or add an existing remote and fetch branches
-mise run remote-add owner/repo
+just remote-add owner/repo
 ```
 
 ## Updating template files
@@ -89,14 +79,14 @@ mise run remote-add owner/repo
 This project was scaffolded from a copier template. To pull in template updates:
 
 ```bash
-mise run template-update
+just template-update
 ```
 
 Extra arguments are passed through to `copier update`:
 
 ```bash
-mise run template-update -- --vcs-ref v0.2.0   # pin to a specific template version
-mise run template-update -- --defaults          # accept all defaults without prompting
+just template-update --vcs-ref v0.2.0   # pin to a specific template version
+just template-update --defaults          # accept all defaults without prompting
 ```
 
 The task copies template-managed files to a temporary git repo (since copier doesn't
