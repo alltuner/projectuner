@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.2.4](https://github.com/alltuner/projectuner/compare/v0.2.3...v0.2.4) (2026-02-08)
+
+
+### Features
+
+* fast-forward base branch in wt-add and add recipe aliases ([#26](https://github.com/alltuner/projectuner/issues/26)) ([b1dfd24](https://github.com/alltuner/projectuner/commit/b1dfd24ba8f1139c8530432d72612cbde46138cb))
+
 ## [0.2.3](https://github.com/alltuner/projectuner/compare/v0.2.2...v0.2.3) (2026-02-08)
 
 
