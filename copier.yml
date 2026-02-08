@@ -21,3 +21,4 @@ git_remote_url:
   type: str
   help: Git remote URL to clone (leave empty to start a fresh repo)
   default: ""
+  when: "{{ _copier_operation == 'copy' }}"
