@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.2.1](https://github.com/alltuner/projectuner/compare/v0.2.0...v0.2.1) (2026-02-08)
+
+
+### Features
+
+* list recipes when just is invoked without arguments ([#20](https://github.com/alltuner/projectuner/issues/20)) ([69cfb18](https://github.com/alltuner/projectuner/commit/69cfb182bd8f43990dc1524bd6ed0fb542d7ff02))
+
 ## [0.2.0](https://github.com/alltuner/projectuner/compare/v0.1.6...v0.2.0) (2026-02-08)
 
 
