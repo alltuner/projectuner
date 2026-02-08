@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.2.3](https://github.com/alltuner/projectuner/compare/v0.2.2...v0.2.3) (2026-02-08)
+
+
+### Features
+
+* accept folder paths in wt-rm and wt-destroy recipes ([#24](https://github.com/alltuner/projectuner/issues/24)) ([635fd99](https://github.com/alltuner/projectuner/commit/635fd994d3c7a6217e6501b7173cf63e4c3a945c))
+
 ## [0.2.2](https://github.com/alltuner/projectuner/compare/v0.2.1...v0.2.2) (2026-02-08)
 
 
