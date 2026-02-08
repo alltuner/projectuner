@@ -16,6 +16,17 @@ wt-add branch base='main':
   # Fetch latest from all remotes (skip if no remotes configured)
   if git remote | grep -q .; then
     git fetch --all --quiet
+
+    # Fast-forward the base branch so new branches start from the latest state
+    if git show-ref --verify --quiet "refs/remotes/origin/$BASE"; then
+      if [ -d "$BASE" ]; then
+        if git -C "$BASE" merge --ff-only "origin/$BASE" 2>/dev/null; then
+          echo "Updated $BASE to $(git -C "$BASE" rev-parse --short HEAD)"
+        else
+          echo "Warning: could not fast-forward $BASE (may have diverged from origin)." >&2
+        fi
+      fi
+    fi
   fi
 
   if git show-ref --verify --quiet "refs/heads/$BRANCH"; then
@@ -80,6 +91,16 @@ wt-destroy target:
 # List all active git worktrees
 wt-ls:
   git worktree list
+
+# Alias for wt-ls
+[private]
+wt-list:
+  @{{ just_executable() }} wt-ls
+
+# Alias for wt-rm
+[private]
+wt-remove target:
+  @{{ just_executable() }} wt-rm {{ target }}
 
 # Fetch all remotes and fast-forward the main branch
 wt-update:
