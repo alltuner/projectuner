@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.2.2](https://github.com/alltuner/projectuner/compare/v0.2.1...v0.2.2) (2026-02-08)
+
+
+### Features
+
+* add blessed .claude and .opencode config to scaffolding template ([#22](https://github.com/alltuner/projectuner/issues/22)) ([5e3dcd5](https://github.com/alltuner/projectuner/commit/5e3dcd5d9415b259ffcfc1d17a5676e1a6b8fb83))
+
 ## [0.2.1](https://github.com/alltuner/projectuner/compare/v0.2.0...v0.2.1) (2026-02-08)
 
 
