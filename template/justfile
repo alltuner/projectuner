@@ -1,0 +1,216 @@
+# ABOUTME: Recipes for managing git worktrees and GitHub repos.
+# ABOUTME: Invoked via: uv run --from just-bin just <recipe>
+
+# Create a new git worktree for a branch
+wt-add branch base='main':
+  #!/bin/bash
+  set -euo pipefail
+
+  BRANCH="{{ branch }}"
+  BASE="{{ base }}"
+
+  # Fetch latest from all remotes (skip if no remotes configured)
+  if git remote | grep -q .; then
+    git fetch --all --quiet
+  fi
+
+  if git show-ref --verify --quiet "refs/heads/$BRANCH"; then
+    # Local branch exists, check it out
+    git worktree add "$BRANCH" "$BRANCH"
+    echo "Checked out existing branch '$BRANCH'"
+  elif git show-ref --verify --quiet "refs/remotes/origin/$BRANCH"; then
+    # Remote branch exists, track it
+    git worktree add "$BRANCH" "$BRANCH"
+    echo "Checked out '$BRANCH' (tracking origin/$BRANCH)"
+  else
+    # New branch, create from base
+    git worktree add -b "$BRANCH" "$BRANCH" "$BASE"
+    echo "Created new branch '$BRANCH' from '$BASE'"
+  fi
+  echo "  cd $BRANCH/"
+
+# Remove a git worktree and its local branch
+wt-rm branch:
+  #!/bin/bash
+  set -euo pipefail
+
+  BRANCH="{{ branch }}"
+
+  if [ "$BRANCH" = "main" ]; then
+    echo "Error: refusing to remove the main worktree." >&2
+    exit 1
+  fi
+
+  git worktree remove "$BRANCH"
+
+  if ! git branch -d "$BRANCH" 2>/dev/null; then
+    echo "Worktree removed but branch '$BRANCH' has unmerged changes."
+    echo "  To delete it anyway: git branch -D $BRANCH"
+  else
+    echo "Removed worktree and branch '$BRANCH'"
+  fi
+
+# Remove a worktree and delete its local and remote branches
+wt-destroy branch:
+  #!/bin/bash
+  set -euo pipefail
+
+  BRANCH="{{ branch }}"
+
+  if [ "$BRANCH" = "main" ]; then
+    echo "Error: refusing to destroy the main worktree." >&2
+    exit 1
+  fi
+
+  git worktree remove "$BRANCH"
+
+  git branch -D "$BRANCH"
+
+  if git remote | grep -q . && git ls-remote --exit-code --heads origin "$BRANCH" >/dev/null 2>&1; then
+    git push origin --delete "$BRANCH"
+    echo "Removed worktree, local branch, and remote branch '$BRANCH'"
+  else
+    echo "Removed worktree and local branch '$BRANCH' (no remote branch found)"
+  fi
+
+# List all active git worktrees
+wt-ls:
+  git worktree list
+
+# Fetch all remotes and fast-forward the main branch
+wt-update:
+  #!/bin/bash
+  set -euo pipefail
+
+  if ! git remote | grep -q .; then
+    echo "No remotes configured. Nothing to update." >&2
+    exit 1
+  fi
+
+  git fetch --all --quiet
+
+  # Fast-forward main inside its worktree
+  if git -C main merge --ff-only origin/main 2>/dev/null; then
+    echo "Updated main to $(git -C main rev-parse --short HEAD)"
+  else
+    echo "Could not fast-forward main (diverged or worktree missing)." >&2
+    echo "  Resolve manually: cd main && git pull"
+    exit 1
+  fi
+
+# Create a public GitHub repo and push main
+repo-public repo:
+  #!/bin/bash
+  set -euo pipefail
+
+  REPO="{{ repo }}"
+
+  gh repo create "$REPO" --public --source=. --push
+  echo ""
+  echo "Public repo created and main branch pushed."
+  echo "  https://github.com/$REPO"
+
+# Create a private GitHub repo and push main
+repo-private repo:
+  #!/bin/bash
+  set -euo pipefail
+
+  REPO="{{ repo }}"
+
+  gh repo create "$REPO" --private --source=. --push
+  echo ""
+  echo "Private repo created and main branch pushed."
+  echo "  https://github.com/$REPO"
+
+# Add an existing GitHub repo as a remote and fetch branches
+remote-add repo name='origin':
+  #!/bin/bash
+  set -euo pipefail
+
+  REPO="{{ repo }}"
+  NAME="{{ name }}"
+  URL="git@github.com:${REPO}.git"
+
+  if git remote get-url "$NAME" &>/dev/null; then
+    echo "Error: remote '$NAME' already exists." >&2
+    echo "  Current URL: $(git remote get-url "$NAME")" >&2
+    echo "  To replace it: git remote set-url $NAME $URL" >&2
+    exit 1
+  fi
+
+  git remote add "$NAME" "$URL"
+  git config "remote.$NAME.fetch" "+refs/heads/*:refs/remotes/$NAME/*"
+  git fetch "$NAME"
+
+  echo ""
+  echo "Remote '$NAME' added and branches fetched."
+  echo "  $URL"
+  echo ""
+  echo "To push main: git push -u $NAME main"
+
+# Update template files via copier (works around bare repo limitation)
+template-update *args:
+  #!/bin/bash
+  set -euo pipefail
+
+  if ! command -v uvx &>/dev/null; then
+    echo "Error: uvx is required but not found. Install uv first." >&2
+    exit 1
+  fi
+
+  if [ ! -f .copier-answers.yml ]; then
+    echo "Error: .copier-answers.yml not found. Is this a copier-managed project?" >&2
+    exit 1
+  fi
+
+  # Collect directories to exclude from copy (worktrees, bare repo, scratch areas)
+  EXCLUDE_ARGS=(--exclude .bare/ --exclude .git --exclude _/ --exclude .claude/)
+
+  while IFS= read -r wt_path; do
+    [ -z "$wt_path" ] && continue
+    # Convert absolute worktree path to a name relative to project root
+    wt_name="${wt_path##*/}"
+    EXCLUDE_ARGS+=(--exclude "$wt_name/")
+  done < <(git worktree list --porcelain | awk '/^worktree /{print $2}')
+
+  # Resolve symlinks (macOS /var -> /private/var) so copier path comparisons work
+  TMPDIR=$(realpath "$(mktemp -d)")
+  trap 'rm -rf "$TMPDIR"' EXIT
+
+  # Snapshot template-managed files before update
+  rsync -a "${EXCLUDE_ARGS[@]}" ./ "$TMPDIR/"
+
+  # Record files present before copier runs
+  BEFORE=$(mktemp)
+  (cd "$TMPDIR" && find . -not -path './.git/*' -not -name '.git' -type f | sort) > "$BEFORE"
+
+  # Give copier a git repo to work with
+  git -C "$TMPDIR" init --quiet
+  git -C "$TMPDIR" add -A
+  git -C "$TMPDIR" commit --quiet -m "pre-update snapshot"
+
+  # Run copier update, passing through any extra args
+  if ! uvx copier update --trust {{ args }} "$TMPDIR"; then
+    echo "Error: copier update failed." >&2
+    exit 1
+  fi
+
+  # Record files present after copier runs
+  AFTER=$(mktemp)
+  (cd "$TMPDIR" && find . -not -path './.git/*' -not -name '.git' -type f | sort) > "$AFTER"
+
+  # Sync updated files back (exclude the temp git repo)
+  rsync -a --exclude .git "$TMPDIR/" ./
+
+  # Remove files that copier deleted (present before but not after)
+  while IFS= read -r deleted; do
+    target="./$deleted"
+    if [ -f "$target" ]; then
+      rm "$target"
+      echo "Removed: $deleted"
+    fi
+  done < <(comm -23 "$BEFORE" "$AFTER")
+
+  rm -f "$BEFORE" "$AFTER"
+
+  echo "Template update complete."
