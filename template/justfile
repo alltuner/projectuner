@@ -1,6 +1,10 @@
 # ABOUTME: Recipes for managing git worktrees and GitHub repos.
 # ABOUTME: Invoked via: uv run --from just-bin just <recipe>
 
+# List available recipes
+default:
+  @{{ just_executable() }} --list
+
 # Create a new git worktree for a branch
 wt-add branch base='main':
   #!/bin/bash
