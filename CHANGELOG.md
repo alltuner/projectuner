@@ -1,5 +1,16 @@
 # Changelog
 
+## [0.2.0](https://github.com/alltuner/projectuner/compare/v0.1.6...v0.2.0) (2026-02-08)
+
+
+### ⚠ BREAKING CHANGES
+
+* migrate from mise to just, make repo private ([#18](https://github.com/alltuner/projectuner/issues/18))
+
+### Features
+
+* migrate from mise to just, make repo private ([#18](https://github.com/alltuner/projectuner/issues/18)) ([415cf02](https://github.com/alltuner/projectuner/commit/415cf02a16bace9c21d7c8a95b6959b071859c92))
+
 ## [0.1.6](https://github.com/alltuner/projectuner/compare/v0.1.5...v0.1.6) (2026-02-07)
 
 
