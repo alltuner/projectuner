@@ -59,6 +59,34 @@ just wt-rm my-feature
 just wt-destroy my-feature
 ```
 
+## Repository management
+
+Clone an existing GitHub repo into this project:
+
+```bash
+just repo-clone owner/repo-name
+```
+
+Initialize a fresh bare repo (no remote):
+
+```bash
+just repo-init
+```
+
+Create a GitHub repo and push main:
+
+```bash
+just repo-create owner/repo-name           # private by default
+just repo-create owner/repo-name public    # or public
+```
+
+Change repo visibility:
+
+```bash
+just repo-public
+just repo-private
+```
+
 ## Updating template files
 
 This project was scaffolded from a copier template. To pull in template updates:

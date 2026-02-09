@@ -5,10 +5,15 @@ Copier template that scaffolds git projects using the bare repo + worktree patte
 ## Repository structure
 
 ```
-copier.yml           Copier template configuration
-template/            Template files copied to new projects
-  justfile           Just recipes for worktree management
-  AGENTS.md          Agent instructions for scaffolded projects
+copier.yml                 Copier template configuration
+template/                  Template files copied to new projects
+  justfile                 Worktree, repo, and template management recipes
+  AGENTS.md                Agent instructions for scaffolded projects
+  CLAUDE.md                Symlink to AGENTS.md
+  opencode.json            OpenCode agent configuration
+  .mcp.json                MCP server configuration
+  .claude/                 Claude Code settings and commands
+  .opencode/               OpenCode commands
 ```
 
 ## PR title conventions
