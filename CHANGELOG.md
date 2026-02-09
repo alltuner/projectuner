@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.3.1](https://github.com/alltuner/projectuner/compare/v0.3.0...v0.3.1) (2026-02-09)
+
+
+### Features
+
+* add repo setup and visibility recipes ([#30](https://github.com/alltuner/projectuner/issues/30)) ([7c84f67](https://github.com/alltuner/projectuner/commit/7c84f67099c19e00037b3458c96421fc61d4b3fa))
+
 ## [0.3.0](https://github.com/alltuner/projectuner/compare/v0.2.4...v0.3.0) (2026-02-09)
 
 
