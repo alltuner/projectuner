@@ -1,5 +1,16 @@
 # Changelog
 
+## [0.3.0](https://github.com/alltuner/projectuner/compare/v0.2.4...v0.3.0) (2026-02-09)
+
+
+### ⚠ BREAKING CHANGES
+
+* simplify to skeleton-only copier template ([#28](https://github.com/alltuner/projectuner/issues/28))
+
+### Features
+
+* simplify to skeleton-only copier template ([#28](https://github.com/alltuner/projectuner/issues/28)) ([b520730](https://github.com/alltuner/projectuner/commit/b520730789d8a987efaa9cfb3648824349461f3e))
+
 ## [0.2.4](https://github.com/alltuner/projectuner/compare/v0.2.3...v0.2.4) (2026-02-08)
 
 
