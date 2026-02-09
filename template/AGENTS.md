@@ -25,6 +25,9 @@ This project uses a **bare repo + worktree** structure. Read this before making 
    is correct. Always `cd` into a worktree to do git operations on that branch.
 4. **Files at the project root** (outside worktrees) are not tracked by git. The `justfile`,
    `AGENTS.md`, and config directories live here intentionally.
+5. **Before editing ANY file**, verify you are in a feature worktree directory, not `main/`.
+   If no feature worktree exists for your current task, create one with `just wt-add <name>`
+   before making any changes.
 
 ## Developing with worktrees
 
@@ -163,3 +166,8 @@ chore: bump FastAPI dependency
 
 Each worktree has its own `.gitignore`. Use `.git/info/exclude` for patterns that should
 apply across all worktrees.
+
+## Improving these instructions
+
+If anything in this document is unclear, incomplete, or caused you to make a mistake,
+file an issue at https://github.com/alltuner/projectuner so we can fix it.
