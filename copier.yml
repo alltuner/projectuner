@@ -1,24 +1,10 @@
 # ABOUTME: Copier template configuration for scaffolding git worktree-based projects.
-# ABOUTME: Defines questions, file exclusions, and post-copy tasks.
+# ABOUTME: Defines file exclusions and copy settings. No questions or post-copy tasks.
 
 _subdirectory: template
 _templates_suffix: .jinja
 _preserve_symlinks: true
 
-_tasks:
-  - command: "bash setup.sh && rm setup.sh"
-    when: "{{ _copier_operation == 'copy' }}"
-
-_message_before_copy: |
-  Scaffolds a git worktree-based project using the bare repo pattern.
-
 _message_after_copy: |
-  Project scaffolded successfully!
-    cd {{ _copier_conf.dst_path }}
+  Skeleton files copied. Run from the project root:
     uv run --from just-bin just wt-add <your-branch>
-
-git_remote_url:
-  type: str
-  help: Git remote URL to clone (leave empty to start a fresh repo)
-  default: ""
-  when: "{{ _copier_operation == 'copy' }}"

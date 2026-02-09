@@ -7,11 +7,8 @@ Copier template that scaffolds git projects using the bare repo + worktree patte
 ```
 copier.yml           Copier template configuration
 template/            Template files copied to new projects
-  setup.sh.jinja     Post-copy scaffolding script
   justfile           Just recipes for worktree management
   AGENTS.md          Agent instructions for scaffolded projects
-scripts/
-  convert-to-worktree  Converts an existing git clone to worktree structure
 ```
 
 ## PR title conventions
