@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.3.3](https://github.com/alltuner/projectuner/compare/v0.3.2...v0.3.3) (2026-02-09)
+
+
+### Bug Fixes
+
+* add pre-flight check and issue-filing guidance to AGENTS.md ([#36](https://github.com/alltuner/projectuner/issues/36)) ([4c621a5](https://github.com/alltuner/projectuner/commit/4c621a5bc4d00b738a12d68c1c77786a07a957a4))
+
 ## [0.3.2](https://github.com/alltuner/projectuner/compare/v0.3.1...v0.3.2) (2026-02-09)
 
 
