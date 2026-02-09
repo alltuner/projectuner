@@ -21,7 +21,7 @@ Clone an existing GitHub repo:
 
 ```bash
 mkdir ~/repos/my-project && cd ~/repos/my-project
-uvx copier copy gh:dpoblador/projectuner .
+uvx copier copy gh:alltuner/projectuner .
 just repo-clone owner/my-project
 ```
 
@@ -29,7 +29,7 @@ Or start a fresh repo with no remote:
 
 ```bash
 mkdir ~/repos/my-project && cd ~/repos/my-project
-uvx copier copy gh:dpoblador/projectuner .
+uvx copier copy gh:alltuner/projectuner .
 just repo-init
 ```
 
