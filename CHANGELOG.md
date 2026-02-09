@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.3.4](https://github.com/alltuner/projectuner/compare/v0.3.3...v0.3.4) (2026-02-09)
+
+
+### Bug Fixes
+
+* preserve nested paths in wt-rm and wt-destroy ([#39](https://github.com/alltuner/projectuner/issues/39)) ([e485c94](https://github.com/alltuner/projectuner/commit/e485c94c91c757fbd0720e65a97f00abdb7198e5)), closes [#38](https://github.com/alltuner/projectuner/issues/38)
+
 ## [0.3.3](https://github.com/alltuner/projectuner/compare/v0.3.2...v0.3.3) (2026-02-09)
 
 
