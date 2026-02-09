@@ -26,37 +26,43 @@ This project uses a **bare repo + worktree** structure. Read this before making 
 4. **Files at the project root** (outside worktrees) are not tracked by git. The `justfile`,
    `AGENTS.md`, and config directories live here intentionally.
 
-## Working with worktrees
+## Developing with worktrees
 
-All worktree operations use just recipes from the project root. If just is not installed,
+All recipes are run from the project root. If just is not installed,
 use `uv run --from just-bin just` instead of `just`.
 
-Create a new worktree for a feature branch:
+Start a feature by creating a worktree:
 
 ```bash
-just wt-add my-feature          # branches from main
-just wt-add my-feature develop  # branches from develop
+just wt-add my-feature     # creates branch from main
+cd my-feature/             # full working copy, ready to go
 ```
 
-List active worktrees:
+Work normally (edit, commit, push) inside `my-feature/`. Meanwhile `main/` stays
+pristine, so you can diff against it anytime:
 
 ```bash
-just wt-ls
+git diff main...my-feature
 ```
 
-Fetch latest from all remotes and fast-forward main:
+You can have multiple worktrees active at once (one per branch):
 
 ```bash
-just wt-update
+just wt-add bugfix         # another branch, another directory
+just wt-ls                 # see all active worktrees
 ```
 
-Remove a worktree when done:
+When a branch is merged, clean up:
 
 ```bash
-just wt-rm my-feature
+just wt-rm my-feature      # removes worktree + local branch
+just wt-destroy bugfix     # also deletes the remote branch
+```
 
-# Or remove worktree + local + remote branch in one shot
-just wt-destroy my-feature
+To pull the latest changes into your local main:
+
+```bash
+just wt-update             # fetches all remotes, fast-forwards main
 ```
 
 ## Repository management
