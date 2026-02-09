@@ -166,3 +166,8 @@ chore: bump FastAPI dependency
 
 Each worktree has its own `.gitignore`. Use `.git/info/exclude` for patterns that should
 apply across all worktrees.
+
+## Improving these instructions
+
+If anything in this document is unclear, incomplete, or caused you to make a mistake,
+file an issue at https://github.com/alltuner/projectuner so we can fix it.
