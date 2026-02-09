@@ -12,27 +12,32 @@ each worktree is a full working copy of a branch.
 ## Prerequisites
 
 - git
+- [gh](https://cli.github.com/) (GitHub CLI, for repo setup recipes)
 - [uv](https://docs.astral.sh/uv/) (Python package manager, used to run just and copier)
 
 ## Usage
 
-Set up the bare repo and main worktree yourself, then run copier to drop skeleton files:
+Clone an existing GitHub repo:
 
 ```bash
 mkdir ~/repos/my-project && cd ~/repos/my-project
-gh repo clone owner/my-project .git -- --bare
-git worktree add main main
 uvx copier copy gh:dpoblador/projectuner .
+just repo-clone owner/my-project
 ```
 
-For a brand-new repo with no remote:
+Or start a fresh repo with no remote:
 
 ```bash
 mkdir ~/repos/my-project && cd ~/repos/my-project
-git init --bare .git
-git -C .git commit --allow-empty -m "Initial commit"
-git worktree add main main
 uvx copier copy gh:dpoblador/projectuner .
+just repo-init
+```
+
+To publish a fresh repo to GitHub:
+
+```bash
+just repo-create owner/my-project         # private by default
+just repo-create owner/my-project public  # or public
 ```
 
 ## What you get
@@ -48,34 +53,45 @@ my-project/
 └── .copier-answers.yml
 ```
 
-## Worktree workflow
+## Developing with worktrees
 
-All worktree operations are just recipes, run from the project root. If you have
-[just](https://github.com/casey/just) installed, you can use `just <recipe>` directly
-instead of the `uv run --from just-bin` prefix.
+All recipes are run from the project root. If you have
+[just](https://github.com/casey/just) installed, you can use `just` directly
+instead of `uv run --from just-bin just`.
+
+Start a feature by creating a worktree:
 
 ```bash
-# Start a new feature
-uv run --from just-bin just wt-add my-feature
-
-# Work in it
-cd my-feature/
-
-# List all worktrees
-uv run --from just-bin just wt-ls
-
-# Fetch latest and fast-forward main
-uv run --from just-bin just wt-update
-
-# Clean up when done (keeps remote branch)
-uv run --from just-bin just wt-rm my-feature
-
-# Or nuke everything: worktree + local + remote branch
-uv run --from just-bin just wt-destroy my-feature
+just wt-add my-feature     # creates branch from main
+cd my-feature/             # full working copy, ready to go
 ```
 
-The `main/` worktree stays pristine as a clean reference for diffing. Never edit files in it
-directly.
+Work normally (edit, commit, push) inside `my-feature/`. Meanwhile `main/` stays
+pristine, so you can diff against it anytime:
+
+```bash
+git diff main...my-feature
+```
+
+You can have multiple worktrees active at once (one per branch):
+
+```bash
+just wt-add bugfix         # another branch, another directory
+just wt-ls                 # see all active worktrees
+```
+
+When a branch is merged, clean up:
+
+```bash
+just wt-rm my-feature      # removes worktree + local branch
+just wt-destroy bugfix     # also deletes the remote branch
+```
+
+To pull the latest changes into your local main:
+
+```bash
+just wt-update             # fetches all remotes, fast-forwards main
+```
 
 ## Updating a scaffolded project
 
@@ -122,6 +138,11 @@ outside version control.
 | `wt-destroy` | `just wt-destroy <branch>` | Remove a worktree and delete both local and remote branches. |
 | `wt-ls` | `just wt-ls` | List all active worktrees. |
 | `wt-update` | `just wt-update` | Fetch all remotes and fast-forward `main`. |
+| `repo-clone` | `just repo-clone <owner/repo>` | Clone a GitHub repo as a bare `.git/` and create the `main` worktree. |
+| `repo-init` | `just repo-init` | Initialize a bare `.git/` repo with an empty commit and `main` worktree. |
+| `repo-create` | `just repo-create <owner/repo> [visibility]` | Create a GitHub repo (default: private) and push `main`. |
+| `repo-public` | `just repo-public` | Change the GitHub repo's visibility to public. |
+| `repo-private` | `just repo-private` | Change the GitHub repo's visibility to private. |
 | `template-update` | `just template-update [args]` | Update template files via copier. |
 
 ## Local excludes
@@ -129,18 +150,6 @@ outside version control.
 Files at the project root are outside version control. They're excluded via
 `.git/info/exclude` (not `.gitignore`). To add your own patterns, edit
 `.git/info/exclude` directly.
-
-## Known issues
-
-### Starship shows branch name at the project root
-
-[Starship](https://starship.rs/)'s `git_branch` module reads `.git/HEAD` and displays the
-branch name even at the bare repo root. The `ignore_bare_repo` option doesn't help because
-Starship uses [gitoxide](https://github.com/GitoxideLabs/gitoxide) which
-[has a bug detecting bare repos](https://github.com/GitoxideLabs/gitoxide/issues/2402).
-
-The fix has been merged in gitoxide and is expected in the gitoxide release on 2026-02-22,
-after which Starship needs to bump its gitoxide dependency.
 
 ## Credit
 

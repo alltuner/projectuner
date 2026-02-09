@@ -1,4 +1,4 @@
-# ABOUTME: Recipes for managing git worktrees and updating template files.
+# ABOUTME: Recipes for managing git worktrees, GitHub repos, and template files.
 # ABOUTME: Invoked via: uv run --from just-bin just <recipe>
 
 # List available recipes
@@ -122,6 +122,109 @@ wt-update:
     echo "  Resolve manually: cd main && git pull"
     exit 1
   fi
+
+# Clone an existing GitHub repo as a bare repo with a main worktree
+repo-clone repo:
+  #!/bin/bash
+  set -euo pipefail
+
+  if [ -d .git ] || [ -f .git ]; then
+    echo "Error: .git already exists." >&2
+    exit 1
+  fi
+
+  REPO="{{ repo }}"
+
+  gh repo clone "$REPO" .git -- --bare
+  git config remote.origin.fetch "+refs/heads/*:refs/remotes/origin/*"
+  git fetch origin --quiet
+  git worktree add main main
+
+  echo "Cloned $REPO with main worktree."
+  echo "  cd main/"
+
+# Initialize a new bare repo with a main worktree
+repo-init:
+  #!/bin/bash
+  set -euo pipefail
+
+  if [ -d .git ] || [ -f .git ]; then
+    echo "Error: .git already exists." >&2
+    exit 1
+  fi
+
+  git init --bare .git
+  TREE=$(git hash-object -t tree /dev/null)
+  COMMIT=$(echo "Initial commit" | git commit-tree "$TREE")
+  git update-ref refs/heads/main "$COMMIT"
+  git worktree add main main
+
+  echo "Initialized bare repo with main worktree."
+  echo "  cd main/"
+
+# Create a GitHub repo and push main
+repo-create repo visibility='private':
+  #!/bin/bash
+  set -euo pipefail
+
+  REPO="{{ repo }}"
+  VISIBILITY="{{ visibility }}"
+
+  if git remote get-url origin &>/dev/null; then
+    echo "Error: origin remote already exists ($(git remote get-url origin))." >&2
+    exit 1
+  fi
+
+  gh repo create "$REPO" --"$VISIBILITY"
+
+  PROTOCOL=$(gh config get git_protocol 2>/dev/null || echo "https")
+  if [ "$PROTOCOL" = "ssh" ]; then
+    URL="git@github.com:${REPO}.git"
+  else
+    URL="https://github.com/${REPO}.git"
+  fi
+
+  git remote add origin "$URL"
+  git config remote.origin.fetch "+refs/heads/*:refs/remotes/origin/*"
+  git -C main push -u origin main
+
+  echo ""
+  echo "Created $VISIBILITY repo and pushed main."
+  echo "  https://github.com/$REPO"
+
+# Change GitHub repo visibility to public
+repo-public:
+  @{{ just_executable() }} _repo-visibility public
+
+# Change GitHub repo visibility to private
+repo-private:
+  @{{ just_executable() }} _repo-visibility private
+
+[private]
+_repo-visibility visibility:
+  #!/bin/bash
+  set -euo pipefail
+
+  VISIBILITY="{{ visibility }}"
+
+  REMOTE_URL=$(git remote get-url origin 2>/dev/null) || {
+    echo "Error: no origin remote configured." >&2
+    exit 1
+  }
+
+  REPO=$(echo "$REMOTE_URL" | sed -E 's|.*github\.com[:/]||; s|\.git$||')
+  if [ -z "$REPO" ]; then
+    echo "Error: could not parse GitHub repo from $REMOTE_URL" >&2
+    exit 1
+  fi
+
+  gh repo view "$REPO" >/dev/null 2>&1 || {
+    echo "Error: GitHub repo $REPO not found." >&2
+    exit 1
+  }
+
+  gh repo edit "$REPO" --visibility "$VISIBILITY"
+  echo "$REPO is now $VISIBILITY."
 
 # Update template files via copier (works around bare repo limitation)
 template-update *args:
