@@ -20,16 +20,16 @@ each worktree is a full working copy of a branch.
 Clone an existing GitHub repo:
 
 ```bash
-mkdir ~/repos/my-project && cd ~/repos/my-project
-uvx copier copy gh:alltuner/projectuner .
+uvx copier copy gh:alltuner/projectuner ~/repos/my-project
+cd ~/repos/my-project
 just repo-clone owner/my-project
 ```
 
 Or start a fresh repo with no remote:
 
 ```bash
-mkdir ~/repos/my-project && cd ~/repos/my-project
-uvx copier copy gh:alltuner/projectuner .
+uvx copier copy gh:alltuner/projectuner ~/repos/my-project
+cd ~/repos/my-project
 just repo-init
 ```
 
