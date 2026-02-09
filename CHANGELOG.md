@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.3.5](https://github.com/alltuner/projectuner/compare/v0.3.4...v0.3.5) (2026-02-09)
+
+
+### Bug Fixes
+
+* clean up empty parent directories after worktree removal ([#41](https://github.com/alltuner/projectuner/issues/41)) ([aba7142](https://github.com/alltuner/projectuner/commit/aba7142bd11b5d854244344c223758ffc9401129))
+
 ## [0.3.4](https://github.com/alltuner/projectuner/compare/v0.3.3...v0.3.4) (2026-02-09)
 
 
