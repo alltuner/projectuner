@@ -25,6 +25,9 @@ This project uses a **bare repo + worktree** structure. Read this before making 
    is correct. Always `cd` into a worktree to do git operations on that branch.
 4. **Files at the project root** (outside worktrees) are not tracked by git. The `justfile`,
    `AGENTS.md`, and config directories live here intentionally.
+5. **Before editing ANY file**, verify you are in a feature worktree directory, not `main/`.
+   If no feature worktree exists for your current task, create one with `just wt-add <name>`
+   before making any changes.
 
 ## Developing with worktrees
 
