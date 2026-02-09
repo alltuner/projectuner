@@ -6,12 +6,10 @@ This project uses a **bare repo + worktree** structure. Read this before making 
 
 ```
 <project>/
-├── .bare/           # Bare git clone (all git object data lives here)
-├── .git             # Pointer file (contains "gitdir: ./.bare")
+├── .git/            # Bare git repo (all git object data lives here)
 ├── main/            # Worktree for the main branch (keep pristine)
 ├── <feature>/       # Worktree for a feature branch
 ├── justfile         # Worktree management recipes (run via just)
-├── _/               # Scratchpad for notes and one-off scripts
 ├── .claude/         # Agent configuration (outside version control)
 └── AGENTS.md        # This file
 ```
@@ -22,8 +20,8 @@ This project uses a **bare repo + worktree** structure. Read this before making 
    basing new branches, not for edits.
 2. **Each worktree is a full checkout** of a branch. You `cd` into a worktree directory to work on
    that branch. There is no `git checkout` or `git switch` needed.
-3. **The project root is a container, not a working directory**. The `.git` pointer file connects
-   to `.bare/`. Running `git status` at the root will say "must be run in a work tree", which
+3. **The project root is a container, not a working directory**. The `.git` directory is the bare
+   repo itself. Running `git status` at the root will say "must be run in a work tree", which
    is correct. Always `cd` into a worktree to do git operations on that branch.
 4. **Files at the project root** (outside worktrees) are not tracked by git. The `justfile`,
    `AGENTS.md`, and config directories live here intentionally.
@@ -59,19 +57,6 @@ just wt-rm my-feature
 
 # Or remove worktree + local + remote branch in one shot
 just wt-destroy my-feature
-```
-
-## Setting up a remote
-
-If the project was created without a remote URL, use one of these to connect it:
-
-```bash
-# Create a new GitHub repo (public or private) and push
-just repo-public owner/repo-name
-just repo-private owner/repo-name
-
-# Or add an existing remote and fetch branches
-just remote-add owner/repo
 ```
 
 ## Updating template files
@@ -142,5 +127,5 @@ chore: bump FastAPI dependency
 
 ## Local excludes
 
-Each worktree has its own `.gitignore`. Use `.bare/info/exclude` for patterns that should
+Each worktree has its own `.gitignore`. Use `.git/info/exclude` for patterns that should
 apply across all worktrees.

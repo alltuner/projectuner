@@ -1,4 +1,4 @@
-# ABOUTME: Recipes for managing git worktrees and GitHub repos.
+# ABOUTME: Recipes for managing git worktrees and updating template files.
 # ABOUTME: Invoked via: uv run --from just-bin just <recipe>
 
 # List available recipes
@@ -123,56 +123,6 @@ wt-update:
     exit 1
   fi
 
-# Create a public GitHub repo and push main
-repo-public repo:
-  #!/bin/bash
-  set -euo pipefail
-
-  REPO="{{ repo }}"
-
-  gh repo create "$REPO" --public --source=. --push
-  echo ""
-  echo "Public repo created and main branch pushed."
-  echo "  https://github.com/$REPO"
-
-# Create a private GitHub repo and push main
-repo-private repo:
-  #!/bin/bash
-  set -euo pipefail
-
-  REPO="{{ repo }}"
-
-  gh repo create "$REPO" --private --source=. --push
-  echo ""
-  echo "Private repo created and main branch pushed."
-  echo "  https://github.com/$REPO"
-
-# Add an existing GitHub repo as a remote and fetch branches
-remote-add repo name='origin':
-  #!/bin/bash
-  set -euo pipefail
-
-  REPO="{{ repo }}"
-  NAME="{{ name }}"
-  URL="git@github.com:${REPO}.git"
-
-  if git remote get-url "$NAME" &>/dev/null; then
-    echo "Error: remote '$NAME' already exists." >&2
-    echo "  Current URL: $(git remote get-url "$NAME")" >&2
-    echo "  To replace it: git remote set-url $NAME $URL" >&2
-    exit 1
-  fi
-
-  git remote add "$NAME" "$URL"
-  git config "remote.$NAME.fetch" "+refs/heads/*:refs/remotes/$NAME/*"
-  git fetch "$NAME"
-
-  echo ""
-  echo "Remote '$NAME' added and branches fetched."
-  echo "  $URL"
-  echo ""
-  echo "To push main: git push -u $NAME main"
-
 # Update template files via copier (works around bare repo limitation)
 template-update *args:
   #!/bin/bash
@@ -188,8 +138,8 @@ template-update *args:
     exit 1
   fi
 
-  # Collect directories to exclude from copy (worktrees, bare repo, scratch areas)
-  EXCLUDE_ARGS=(--exclude .bare/ --exclude .git --exclude _/ --exclude .claude/)
+  # Collect directories to exclude from copy (worktrees and config)
+  EXCLUDE_ARGS=(--exclude .git --exclude .claude/)
 
   while IFS= read -r wt_path; do
     [ -z "$wt_path" ] && continue
