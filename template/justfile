@@ -49,20 +49,20 @@ wt-rm target:
   #!/bin/bash
   set -euo pipefail
 
-  BRANCH="$(basename "{{ target }}")"
+  TARGET="{{ target }}"
 
-  if [ "$BRANCH" = "main" ]; then
+  if [ "$TARGET" = "main" ]; then
     echo "Error: refusing to remove the main worktree." >&2
     exit 1
   fi
 
-  git worktree remove "$BRANCH"
+  git worktree remove "$TARGET"
 
-  if ! git branch -d "$BRANCH" 2>/dev/null; then
-    echo "Worktree removed but branch '$BRANCH' has unmerged changes."
-    echo "  To delete it anyway: git branch -D $BRANCH"
+  if ! git branch -d "$TARGET" 2>/dev/null; then
+    echo "Worktree removed but branch '$TARGET' has unmerged changes."
+    echo "  To delete it anyway: git branch -D $TARGET"
   else
-    echo "Removed worktree and branch '$BRANCH'"
+    echo "Removed worktree and branch '$TARGET'"
   fi
 
 # Remove a worktree and delete its local and remote branches (accepts branch name or folder path)
@@ -70,22 +70,22 @@ wt-destroy target:
   #!/bin/bash
   set -euo pipefail
 
-  BRANCH="$(basename "{{ target }}")"
+  TARGET="{{ target }}"
 
-  if [ "$BRANCH" = "main" ]; then
+  if [ "$TARGET" = "main" ]; then
     echo "Error: refusing to destroy the main worktree." >&2
     exit 1
   fi
 
-  git worktree remove "$BRANCH"
+  git worktree remove "$TARGET" --force
 
-  git branch -D "$BRANCH"
+  git branch -D "$TARGET"
 
-  if git remote | grep -q . && git ls-remote --exit-code --heads origin "$BRANCH" >/dev/null 2>&1; then
-    git push origin --delete "$BRANCH"
-    echo "Removed worktree, local branch, and remote branch '$BRANCH'"
+  if git remote | grep -q . && git ls-remote --exit-code --heads origin "$TARGET" >/dev/null 2>&1; then
+    git push origin --delete "$TARGET"
+    echo "Removed worktree, local branch, and remote branch '$TARGET'"
   else
-    echo "Removed worktree and local branch '$BRANCH' (no remote branch found)"
+    echo "Removed worktree and local branch '$TARGET' (no remote branch found)"
   fi
 
 # List all active git worktrees
