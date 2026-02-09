@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.3.2](https://github.com/alltuner/projectuner/compare/v0.3.1...v0.3.2) (2026-02-09)
+
+
+### Documentation Updates
+
+* fix template URL to alltuner/projectuner ([#32](https://github.com/alltuner/projectuner/issues/32)) ([4dfbf14](https://github.com/alltuner/projectuner/commit/4dfbf144bbc23dff88f343ae55f96c9070fb6985))
+* sync AGENTS.md files with current capabilities ([#34](https://github.com/alltuner/projectuner/issues/34)) ([798faa2](https://github.com/alltuner/projectuner/commit/798faa22e0f3e0bfc9034dba93e0fd6c36888fa7))
+
 ## [0.3.1](https://github.com/alltuner/projectuner/compare/v0.3.0...v0.3.1) (2026-02-09)
 
 
