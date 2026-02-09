@@ -58,6 +58,13 @@ wt-rm target:
 
   git worktree remove "$TARGET"
 
+  # Remove empty parent directories left after worktree removal
+  DIR="$(dirname "$TARGET")"
+  while [ "$DIR" != "." ] && [ -d "$DIR" ] && [ -z "$(ls -A "$DIR")" ]; do
+    rmdir "$DIR"
+    DIR="$(dirname "$DIR")"
+  done
+
   if ! git branch -d "$TARGET" 2>/dev/null; then
     echo "Worktree removed but branch '$TARGET' has unmerged changes."
     echo "  To delete it anyway: git branch -D $TARGET"
@@ -78,6 +85,13 @@ wt-destroy target:
   fi
 
   git worktree remove "$TARGET" --force
+
+  # Remove empty parent directories left after worktree removal
+  DIR="$(dirname "$TARGET")"
+  while [ "$DIR" != "." ] && [ -d "$DIR" ] && [ -z "$(ls -A "$DIR")" ]; do
+    rmdir "$DIR"
+    DIR="$(dirname "$DIR")"
+  done
 
   git branch -D "$TARGET"
 
