@@ -42,6 +42,12 @@ wt-add branch base='main':
     git worktree add -b "$BRANCH" "$BRANCH" "$BASE"
     echo "Created new branch '$BRANCH' from '$BASE'"
   fi
+  # Symlink .env from project root into the worktree if available
+  if [ -f .env ] && [ ! -e "$BRANCH/.env" ]; then
+    ln -s "$(pwd)/.env" "$BRANCH/.env"
+    echo "Linked .env into worktree"
+  fi
+
   echo "  cd $BRANCH/"
 
 # Remove a git worktree and its local branch (accepts branch name or folder path)
