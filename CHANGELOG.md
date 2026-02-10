@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.3.7](https://github.com/alltuner/projectuner/compare/v0.3.6...v0.3.7) (2026-02-10)
+
+
+### Features
+
+* symlink .env into new worktrees ([#45](https://github.com/alltuner/projectuner/issues/45)) ([0fcfada](https://github.com/alltuner/projectuner/commit/0fcfadae38db562b9f08c820b5846cb0b05b0a58))
+
 ## [0.3.6](https://github.com/alltuner/projectuner/compare/v0.3.5...v0.3.6) (2026-02-10)
 
 
