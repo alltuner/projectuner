@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.3.6](https://github.com/alltuner/projectuner/compare/v0.3.5...v0.3.6) (2026-02-10)
+
+
+### Bug Fixes
+
+* resolve branch name from worktree when target is a path ([#43](https://github.com/alltuner/projectuner/issues/43)) ([b0ff7de](https://github.com/alltuner/projectuner/commit/b0ff7def6ee1f06864cb7a7a67f323c7207af480))
+
 ## [0.3.5](https://github.com/alltuner/projectuner/compare/v0.3.4...v0.3.5) (2026-02-09)
 
 
