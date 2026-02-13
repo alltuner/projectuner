@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.3.8](https://github.com/alltuner/projectuner/compare/v0.3.7...v0.3.8) (2026-02-13)
+
+
+### Features
+
+* add task management docs and SPECS.md skeleton ([#47](https://github.com/alltuner/projectuner/issues/47)) ([c18e633](https://github.com/alltuner/projectuner/commit/c18e6335d3f21e577ad01cac1ce4ec1059cb36df))
+
 ## [0.3.7](https://github.com/alltuner/projectuner/compare/v0.3.6...v0.3.7) (2026-02-10)
 
 
