@@ -134,7 +134,7 @@ interface). Agents should read it for context before starting work.
 ### Task files
 
 Tasks are individual markdown files at the project root, named `task_N.md` where N is a
-random 4-digit ID (e.g. `task_4821.md`). Each file contains a plain text description of
+random 6-digit ID (e.g. `task_482193.md`). Each file contains a plain text description of
 the task.
 
 Tasks are created by the project manager (bot or web interface). To complete a task:
