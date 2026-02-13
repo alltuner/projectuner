@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.3.9](https://github.com/alltuner/projectuner/compare/v0.3.8...v0.3.9) (2026-02-13)
+
+
+### Miscellaneous Chores
+
+* update task ID docs to 6-digit range ([ff0ea40](https://github.com/alltuner/projectuner/commit/ff0ea40d0b2f2363206ffb7ca933bfc597314b86))
+
 ## [0.3.8](https://github.com/alltuner/projectuner/compare/v0.3.7...v0.3.8) (2026-02-13)
 
 
