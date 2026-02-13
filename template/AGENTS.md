@@ -9,6 +9,9 @@ This project uses a **bare repo + worktree** structure. Read this before making 
 ├── .git/            # Bare git repo (all git object data lives here)
 ├── main/            # Worktree for the main branch (keep pristine)
 ├── <feature>/       # Worktree for a feature branch
+├── SPECS.md         # Project specifications (editable via web)
+├── task_*.md        # Pending task files (created by bot/web)
+├── completed/       # Completed tasks (moved here by agents)
 ├── justfile         # Worktree management recipes (run via just)
 ├── .claude/         # Agent configuration (outside version control)
 └── AGENTS.md        # This file
@@ -24,7 +27,7 @@ This project uses a **bare repo + worktree** structure. Read this before making 
    repo itself. Running `git status` at the root will say "must be run in a work tree", which
    is correct. Always `cd` into a worktree to do git operations on that branch.
 4. **Files at the project root** (outside worktrees) are not tracked by git. The `justfile`,
-   `AGENTS.md`, and config directories live here intentionally.
+   `AGENTS.md`, `SPECS.md`, `task_*.md`, `completed/`, and config directories live here intentionally.
 5. **Before editing ANY file**, verify you are in a feature worktree directory, not `main/`.
    If no feature worktree exists for your current task, create one with `just wt-add <name>`
    before making any changes.
@@ -119,6 +122,28 @@ work in bare repo roots), runs the update there, and syncs results back.
 - Always `cd` into the appropriate worktree directory before running build, test, lint, or git commands.
 - To compare branches from a worktree: `git diff main...<branch>`.
 - To fetch updates: `git fetch --all` from any worktree.
+
+## Task management
+
+### SPECS.md
+
+`SPECS.md` at the project root describes what the project is about — its purpose, goals, and
+key decisions. This file is created and maintained through the project manager (bot or web
+interface). Agents should read it for context before starting work.
+
+### Task files
+
+Tasks are individual markdown files at the project root, named `task_N.md` where N is a
+random 4-digit ID (e.g. `task_4821.md`). Each file contains a plain text description of
+the task.
+
+Tasks are created by the project manager (bot or web interface). To complete a task:
+
+```bash
+mkdir -p completed && mv task_N.md completed/
+```
+
+Completed tasks live in `completed/` for reference.
 
 ## PR title conventions
 
