@@ -1,3 +1,10 @@
+> [!CAUTION]
+> **This project is archived.** [Claude Code](https://code.claude.com/) now includes
+> [built-in git worktree management](https://code.claude.com/docs/en/common-workflows#run-parallel-claude-code-sessions-with-git-worktrees)
+> via the `--worktree` (`-w`) flag, with automatic creation, branch isolation, subagent
+> worktrees, and cleanup. This makes projectuner unnecessary overhead. For non-git VCS,
+> Claude Code supports [WorktreeCreate/WorktreeRemove hooks](https://code.claude.com/docs/en/hooks#worktreecreate).
+
 # projectuner
 
 A [copier](https://copier.readthedocs.io/) template that drops skeleton files into a git
